@@ -19,3 +19,6 @@ la = 1.611        #[m]
 Ca = 0.505        #[m]
 xaI = x2-(xa/2)   #[m]
 xaII = x2+(xa/2)  #[m]
+Nx = 41
+Nz = 81
+zhat = Ca/2       #[m] This is just a placeholder guess for now. Real shear center loc needs to be found
