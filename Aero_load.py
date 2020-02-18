@@ -1,10 +1,10 @@
 import numpy as np
 from variables import *
+import matplotlib.pyplot as plt
 
 #------Loading the aerodynamic data file
 aero_data = np.genfromtxt("aerodynamicloadf100.dat",delimiter = ",")
 
-print(raw_data.shape)
 #------Creating helper angles to find mesh coordinates
 theta_x = np.zeros(Nx+1)
 for j in range(Nx+1):
@@ -23,16 +23,25 @@ z_coor = np.zeros(Nz)
 for j in range(Nz):
     z_coor[j] = (Ca*(1-np.cos(theta_z[j]))/2+Ca*(1-np.cos(theta_z[j+1]))/2)/2
 
-#print(x_coor[0],x_coor[-1], len(x_coor))
-#------Lift force contribution for spanwise locations
 
-q_tilde = np.zeros(Nx) #lift distribution value to be found for each x location
+#----- Getting spanwise lift distribution
+q_tilde  = np.zeros(Nx)                                                     #lift distribution value to be found for each x location
+qT_tilde = np.zeros(Nx)                                                     #torque of aero load for each x loc taken around leading edge
+CoPs     = np.zeros(Nx)                                                     #center of pressure for each x loc
 
 for i in range(Nx):
-    chord_array = aero_data[:,i]
-    chord_contrib = 0
-    for j in range(len(chord_array)-1):
-        chord_contrib += 
+    chord_array    = aero_data[:,i]                                         #picking out lift data for given spanwise location
+    lift_contrib   = 0                                                      #the integral of lift over that spanwise location
+    torque_contrib = 0                                                      #integral of torque over that spanwise location taken around leading edge
+    for k in range(len(chord_array)-1):
+        segm_len        = z_coor[k+1]-z_coor[k]                                    #distance between two adjacent chord locations
+        dA              = segm_len*(chord_array[k]+chord_array[k+1])/2             #trapezoidal rule
+        lift_contrib   += dA                                                       #lift sums areas
+        torque_contrib += (z_coor[k]+segm_len/2)*dA                                #torque sums weighted areas
+    q_tilde[i]  = lift_contrib
+    qT_tilde[i] = torque_contrib
+    CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
+
 
 
 
