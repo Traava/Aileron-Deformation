@@ -64,47 +64,87 @@ def interpol(f,x,M0,MN):
         system_mat[i,i+1] = h_i/6
         output_vec[i] = (f[i+1] - f[i])/h_i - (f[i]-f[i-1])/h_prev
 
-    M = np.linalg.solve(system_mat, output_vec)
-    coef_mat = np.zeros((dim-1,4))
+    M = np.linalg.solve(system_mat, output_vec)             #to find the M coefficients
+    coef_mat = np.zeros((dim-1,4))                          #In between every two neighbouring x positions we have a spline (dim-1 of them), each spline has 4 coefs Ax3 + Bx2 + Cx +D
     for i in range(dim-1):
-        print(h[i])
+        # numerical analysis again
         ai = (M[i+1]-M[i])/(6*h[i])
         bi = M[i]/2
         ci = (f[i+1]-f[i])/h[i]-h[i]*M[i]/3 - h[i]*M[i+1]/6
         di = f[i]
+        # Reformating to get the desired equation in form Ax3 + Bx2 + Cx +D
         Di = di - ci*x[i] + bi*(x[i])**2 -ai*(x[i])**3
         Ci = ci - 2*x[i]*bi + 3*ai*(x[i])**2
         Bi = bi - 3*ai*x[i]
         Ai = ai
-        coef_mat[i] = np.array([Ai,Bi,Ci,Di])
+        coef_mat[i] = np.array([Di,Ci,Bi,Ai])
     return coef_mat
 
+#Evaluating a polynomial at one point
+def polynomial(x,coefs):
+    result = 0
+    for k in range(len(coefs)):
+        result+= coefs[-k-1]*x**(len(coefs)-k-1)            #Going from the back  #this can be written differently
+    return result
 
 
-coef_mat = interpol(q_tilde,x_coor,0,0)
+#----- This is basically for visual verification of the preciseness of the spline interpolation
+# coef_mat = interpol(q_tilde,x_coor,0,0)
+# points = []
+# values = []
+# n = 10
+# for i in range(len(x_coor)-1):
+#     h_i = x_coor[i + 1] - x_coor[i]
+#     coefs = A ,B, C, D = coef_mat[i]
+#     for j in range(n):
+#         points.append(x_coor[i]+h_i*j/n)
+#         values.append(polynomial(x_coor[i]+h_i*j/n,coefs))
 
-def polynomial(x,A,B,C,D):
-    return A*x**3 + B*x**2 + C*x+D
 
-points = []
-values = []
-n = 10
-for i in range(len(x_coor)-1):
-    h_i = x_coor[i + 1] - x_coor[i]
-    A ,B, C, D = tuple(coef_mat[i])
-    for j in range(n):
-        points.append(x_coor[i]+h_i*j/n)
-        values.append(polynomial(x_coor[i]+h_i*j/n,A,B,C,D))
 
-def int_pol(coefs_in):
+
+#------Function that interpolates polynpomials analytically and gives definite integral value
+def int_pol(coefs_in,a,b):
     size = len(coefs_in)
     syst_mat = np.zeros((size+1,size))
     for i in range(1,size+1):
         syst_mat[i,i-1] = 1/i
     coefs_out = np.dot(syst_mat,coefs_in)
-    return coefs_out
+    print(coefs_out)
+    result = polynomial(b,coefs_out)-polynomial(a,coefs_out)
+    return result
 
-print(int_pol(int_pol(np.array([1,1,1,1]).reshape(-1,1))))
+
+print(polynomial(1,np.array([2,1,1])))
+print(polynomial(2,np.array([2,1,1])))
+print(int_pol(np.array([1,1,1]),1,2))
+
+def int_span(coef_mat,coor):
+    dim = len(coor)
+    contributions = np.zeros(dim-1)
+    for i in range(dim-1):
+        contributions[i] = int_pol(coef_mat[i],coor[i],coor[i+1])
+    integrated_vals = np.zeros(dim)
+    for j in range(1,dim):
+        integrated = 0
+        for k in range(j):
+            integrated += contributions[k-1]
+        integrated_vals[j] = integrated
+
+    return integrated_vals
+
+def int_ana(coef_mat,coor):
+    new_mat = interpol(int_span(coef_mat,coor),coor,0,0)
+    return new_mat
+
+plt.plot(x_coor,int_span(int_ana(interpol(q_tilde,x_coor,0,0),x_coor),x_coor))
+plt.plot(x_coor,int_span(interpol(q_tilde,x_coor,0,0),x_coor))
+plt.plot(x_coor,q_tilde)
+plt.show()
+
+
+
+# print(int_pol(int_pol(np.array([1,1,1,1]).reshape(-1,1))))
 
 
 
