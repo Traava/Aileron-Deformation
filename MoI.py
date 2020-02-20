@@ -38,4 +38,5 @@ Iyy_semicircle = (h/2)**3 * t_sk * pi/2  + pi * (h/2) * t_sk * ((centroid-centro
 Izz_Aileron = Izz_stiffeners + Izz_spar + Izz_plane + Izz_semicircle
 Iyy_Aileron = Iyy_stiffeners + Iyy_spar + Iyy_plane + Iyy_semicircle
 
-print(Izz_Aileron,Iyy_Aileron)
+
+#print(Izz_Aileron,Iyy_Aileron)

@@ -22,3 +22,7 @@ xaII = x2+(xa/2)  #[m]
 Nx = 41
 Nz = 81
 zhat = Ca/2       #[m] This is just a placeholder guess for now. Real shear center loc needs to be found
+
+
+G = 27.1e9
+E = 72.9e9

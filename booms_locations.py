@@ -86,7 +86,8 @@ centroid = (sum + 2*centroid_skin + centroid_semicircle + centroid_spar)/Area   
 
 plt.scatter(x = centroid, y=0)                     #plotting the centroid location
 
-plt.show()
+if __name__ == '__main__':
+    plt.show()
 
 
 
