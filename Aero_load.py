@@ -172,9 +172,9 @@ def integration(n,x,func,coor):
 
     return output
 
-
-print(integration(2,1,q_tilde,x_coor))
-
+#
+print(q_tilde)
+print(integration(1,1.6,q_tilde,x_coor))
 
 
 
