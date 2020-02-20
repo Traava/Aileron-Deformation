@@ -2,6 +2,7 @@ import numpy as np
 from variables import *
 import matplotlib.pyplot as plt
 
+"UNIT 2.1"
 #------Loading the aerodynamic data file
 aero_data = 1000*np.genfromtxt("aerodynamicloadf100.dat",delimiter = ",")  #1000* to change to N/m**2
 
@@ -23,32 +24,31 @@ z_coor = np.zeros(Nz)
 for j in range(Nz):
     z_coor[j] = (Ca*(1-np.cos(theta_z[j]))/2+Ca*(1-np.cos(theta_z[j+1]))/2)/2
 
-
+"UNIT 2.2"
 #----- Getting spanwise lift distribution
-q_tilde  = np.zeros(Nx)                                                     #lift distribution value to be found for each x location
-qT_tilde = np.zeros(Nx)                                                     #torque of aero load for each x loc taken around shear center
-CoPs     = np.zeros(Nx)                                                     #center of pressure for each x loc
-
-
+q_tilde  = np.zeros(Nx)          #lift distribution value to be found for each x location
+qT_tilde = np.zeros(Nx)          #torque of aero load for each x loc taken around shear center
+CoPs     = np.zeros(Nx)          #center of pressure for each x loc
 
 for i in range(Nx):
-    chord_array    = aero_data[:,i]                                         #picking out lift data for given spanwise location
-    lift_contrib   = 0                                                      #the integral of lift over that spanwise location
-    torque_contrib = 0                                                      #integral of torque over that spanwise location taken around shear center
+    chord_array    = aero_data[:,i]     #picking out lift data for given spanwise location
+    lift_contrib   = 0                  #the integral of lift over that spanwise location
+    torque_contrib = 0                  #integral of torque over that spanwise location taken around shear center
+    torque_le      = 0
 
     for k in range(len(chord_array)-1):
-        segm_len        = z_coor[k+1]-z_coor[k]                                    #distance between two adjacent chord locations
-        dA              = segm_len*(chord_array[k]+chord_array[k+1])/2             #trapezoidal rule
-        lift_contrib   += dA                                                       #lift sums areas
-        torque_contrib += (zhat - z_coor[k]-segm_len/2)*dA                         #torque sums weighted areas
+        segm_len        = z_coor[k+1]-z_coor[k]                         #distance between two adjacent chord locations
+        dA              = segm_len*(chord_array[k]+chord_array[k+1])/2  #trapezoidal rule
+        lift_contrib   += dA                                            #lift sums areas
+        torque_le      += (z_coor[k]+segm_len/2)*dA                     #torque sums weighted areas
+        torque_contrib += (zhat - z_coor[k]-segm_len/2)*dA              #torque sums weighted areas
 
     q_tilde[i]  = lift_contrib
     qT_tilde[i] = torque_contrib
-    CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
+    CoPs[i]     = torque_le/lift_contrib                               #Distance is moment/force
 
-
+"UNIT 2.3"
 # ------- Cubic spline interpolation
-
 def interpol(f,coor,M0,MN):
 
     dim = len(coor)
@@ -70,8 +70,8 @@ def interpol(f,coor,M0,MN):
         system_mat[i,i+1] = h_i/6
         output_vec[i]     = (f[i+1] - f[i])/h_i - (f[i]-f[i-1])/h_prev
 
-    M = np.linalg.solve(system_mat, output_vec)             #to find the M coefficients
-    coef_mat = np.zeros((dim-1,4))                          #In between every two neighbouring x positions we have a spline (dim-1 of them), each spline has 4 coefs Ax3 + Bx2 + Cx +D
+    M = np.linalg.solve(system_mat, output_vec)#to find the M coefficients
+    coef_mat = np.zeros((dim-1,4))             #In between every two neighbouring x positions we have a spline (dim-1 of them), each spline has 4 coefs Ax3 + Bx2 + Cx +D
 
     for i in range(dim-1):
         # numerical analysis again
@@ -88,6 +88,7 @@ def interpol(f,coor,M0,MN):
 
     return coef_mat
 
+"UNIT 2.4"
 #Evaluating a polynomial at one point
 def polynomial(x,coefs):
 
@@ -96,6 +97,73 @@ def polynomial(x,coefs):
         result+= coefs[k]*x**(k)         #the kth power corresponds to the kth coefficient
 
     return result
+
+"UNIT 2.5"
+#------Function that interpolates polynpomials analytically and gives definite integral value
+def int_pol(coefs_in,a,b):  #coefs are A,B,C,D etc. coefficients of a polynom. given as an array, a and b are start and end of definite integral resp.
+
+    size = len(coefs_in)
+    syst_mat = np.zeros((size+1,size))
+
+    for i in range(1,size+1):
+        syst_mat[i,i-1] = 1/i                                   #this is explained more in depth in the report. Esentially creating an integration in the form of linear transformation
+    coefs_out = np.dot(syst_mat,coefs_in)
+    result = polynomial(b,coefs_out)-polynomial(a,coefs_out)    #finally evaluating F(b) - F(a)
+
+    return result
+
+"UNIT 2.6"
+#-------Function that iterates over the span and finds function values for the antiderivative
+def int_span(coef_mat,coor):
+
+    dim = len(coor)
+    contributions = np.zeros(dim-1)
+
+    for i in range(dim-1):
+        contributions[i] = int_pol(coef_mat[i],coor[i],coor[i+1])  #each spanwise segment has an area asociated with it
+
+    integrated_vals = np.zeros(dim)
+
+    for j in range(1,dim):
+        integrated = 0
+        for k in range(j):                                         #need to sum all contributions up until the point we are looking at
+            integrated += contributions[k-1]
+        integrated_vals[j] = integrated
+
+    return integrated_vals
+
+"UNIT 2.7"
+#-------Function which combines the two above, first integrating and then interpolating again
+def int_ana(coef_mat,coor):
+
+    new_mat = interpol(int_span(coef_mat,coor),coor,0,0)
+
+    return new_mat
+
+"UNIT 2.8"
+#-------Finally, a function to which we give point x and a given number of integrations and it evaluates this for us
+def integration(n,x,func,coor):
+
+    func_coefs = interpol(func,coor,0,0)                    #first interpolant
+
+    for i in range(n):                                      #integrate n times
+        func_coefs = int_ana(func_coefs,coor)
+
+    for j in range(len(coor)):
+        if coor[j] > x:                                     #this to find the actual value corresponding to our x
+            output = polynomial(x,func_coefs[j-1])
+            break
+
+    return output
+
+
+
+
+#VERIFICATION BELOW
+print(CoPs/Ca)
+print(integration(1,1.6,q_tilde,x_coor))
+
+
 
 
 #----- This is basically for visual verification of the preciseness of the spline interpolation
@@ -112,70 +180,3 @@ def polynomial(x,coefs):
 #
 # plt.plot(points,values)
 # plt.show()
-
-
-
-
-#------Function that interpolates polynpomials analytically and gives definite integral value
-def int_pol(coefs_in,a,b):                                      #coefs are A,B,C,D etc. coefficients of a polynom. given as an array, a and b are start and end of definite integral resp.
-
-    size = len(coefs_in)
-    syst_mat = np.zeros((size+1,size))
-
-    for i in range(1,size+1):
-        syst_mat[i,i-1] = 1/i                                   #this is explained more in depth in the report. Esentially creating an integration in the form of linear transformation
-    coefs_out = np.dot(syst_mat,coefs_in)
-    result = polynomial(b,coefs_out)-polynomial(a,coefs_out)    #finally evaluating F(b) - F(a)
-
-    return result
-
-
-#-------Function that iterates over the span and finds function values for the antiderivative
-def int_span(coef_mat,coor):
-
-    dim = len(coor)
-    contributions = np.zeros(dim-1)
-
-    for i in range(dim-1):
-        contributions[i] = int_pol(coef_mat[i],coor[i],coor[i+1])   #each spanwise segment has an area asociated with it
-
-    integrated_vals = np.zeros(dim)
-
-    for j in range(1,dim):
-        integrated = 0
-        for k in range(j):                                         #need to sum all contributions up until the point we are looking at
-            integrated += contributions[k-1]
-        integrated_vals[j] = integrated
-
-    return integrated_vals
-
-#-------Function which combines the two above, first integrating and then interpolating again
-def int_ana(coef_mat,coor):
-
-    new_mat = interpol(int_span(coef_mat,coor),coor,0,0)
-
-    return new_mat
-
-
-#-------Finally, a function to which we give point x and a given number of integrations and it evaluates this for us
-def integration(n,x,func,coor):
-
-    func_coefs = interpol(func,coor,0,0)                    #first interpolant
-
-    for i in range(n):                                      #integrate n times
-        func_coefs = int_ana(func_coefs,coor)
-
-    for j in range(len(coor)):
-        if coor[j] > x:                                     #this to find the actual value corresponding to our x
-            output = polynomial(x,func_coefs[j-1])
-            break
-
-    return output
-
-#
-print(q_tilde)
-print(integration(1,1.6,q_tilde,x_coor))
-
-
-
-
