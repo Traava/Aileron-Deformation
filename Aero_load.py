@@ -3,7 +3,7 @@ from variables import *
 import matplotlib.pyplot as plt
 
 #------Loading the aerodynamic data file
-aero_data = np.genfromtxt("aerodynamicloadf100.dat",delimiter = ",")
+aero_data = 1000*np.genfromtxt("aerodynamicloadf100.dat",delimiter = ",")  #1000* to change to N/m**2
 
 #------Creating helper angles to find mesh coordinates
 theta_x = np.zeros(Nx+1)
@@ -44,7 +44,7 @@ for i in range(Nx):
 
     q_tilde[i]  = lift_contrib
     qT_tilde[i] = torque_contrib
-    CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
+    #CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
 
 
 # ------- Cubic spline interpolation
@@ -173,7 +173,7 @@ def integration(n,x,func,coor):
     return output
 
 
-
+print(integration(2,1,q_tilde,x_coor))
 
 
 
