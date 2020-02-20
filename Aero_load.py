@@ -44,7 +44,7 @@ for i in range(Nx):
 
     q_tilde[i]  = lift_contrib
     qT_tilde[i] = torque_contrib
-    #CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
+    CoPs[i]     = torque_contrib/lift_contrib                               #Distance is moment/force
 
 
 # ------- Cubic spline interpolation
