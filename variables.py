@@ -5,8 +5,8 @@ theta_max = 30*(np.pi/180) #[rad]
 d1 = 0.389/100    #[m]
 d3 = 1.245/100    #[m]
 n_st = 11         #[-]
-w_st = 1.7/1000   #[m]
-h_st = 1.3/1000   #[m]
+w_st = 1.7/100   #[m]
+h_st = 1.3/100   #[m]
 t_st = 1.2/1000   #[m]
 t_sp = 2.4/1000   #[m]
 t_sk = 1.1/1000   #[m]
@@ -22,7 +22,3 @@ xaII = x2+(xa/2)  #[m]
 Nx = 41
 Nz = 81
 zhat = Ca/2       #[m] This is just a placeholder guess for now. Real shear center loc needs to be found
-
-
-G = 27.1e9
-E = 72.9e9
