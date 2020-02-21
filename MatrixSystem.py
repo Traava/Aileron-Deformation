@@ -89,7 +89,7 @@ F1_C2 = 1
 #tao2 is torque of aerodynamics
 
 def F1_const(x):
-    return 1/E*Izz*Q4(x)  + hh/(G*J)* tao2(x)
+    return 1/(E*Izz)*Q4(x)  + hh/(G*J)* tao2(x)
 
 #constant
 
@@ -103,7 +103,7 @@ def F2_RaIaII(x,xn):
     return 1/(6*E*Iyy)*cos(theta)*Mac(x-xn)**3
 
 def F2_const(x):
-    return 1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
+    return -1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
 
 
 ################################################################
@@ -161,7 +161,7 @@ b4 = [P*cos(theta)*(xaII-x1)]
 b5 = [-P*sin(theta)*(xaII-xaI) - aero_Mz(la)]
 b6 = [-d1*cos(theta) - F1_const(x1)]
 b7 = [d1*sin(theta) - F2_const(x1)]
-b8 = [- F1_const(x2)]
+b8 = [- F1_const(x2) ]
 b9 = [- F2_const(x2)]
 b10 = [-d3*cos(theta) - F1_const(x3)]
 b11 = [d3*sin(theta) - F2_const(x3)]
@@ -209,6 +209,11 @@ sumMx = RaI*h*(sin(theta)-cos(theta))/2 - P*h*(cos(theta)-sin(theta))/2 - aero_M
 sumMy = (x1-x2)*Rz2 + (x1-x3)*Rz3 + (x1-xaI)*cos(theta)*RaI - P*cos(theta)*(xaII-x1)
 sumMz = Ry1*(xaI-x1) + Ry2*(x2-xaI) + Ry3*(x3-xaI) + P*sin(theta)*(xaII-xaI) + aero_Mz(la)
 
+BC1 = 1/(E*Izz)*Q4(x1) + hh/(G*J)*tao2(x1) + hh*C5 + C1*x1 + C2 + d1*cos(theta)
+BC2 = C3*x1 + C4 -d1*sin(theta)
+BC3 = F1_Ry123(x2,x1)*Ry1 + F1_RaIaII(x2, xaI)*RaI + 1/(E*Izz)*Q4(x2) + hh/(G*J)*tao2(x2) + C1*x2 + C2 + hh*C5
+BC4 = 1/(6*E*Iyy)*( Rz1*Mac(x2-x1)**3 + RaI*cos(theta)*Mac(x2-xaI)**3 ) + C3*x2 + C4
+BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_RaIaII(x3,xaII)*P + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta)
 
 ###
 
@@ -240,13 +245,17 @@ dY = v(xx) + hh*phi(xx)
 dYe = dY*cos(theta) - w(xx)*sin(theta)
 dZe = w(xx)*cos(theta)+dY*sin(theta)
 
-plt.plot(xx,dZe)
+
 
 hinge = [x1,x2,x3]
 bcY = [d1,0,d3]
 bcZ = [0,0,0]
 
+plt.plot(xx,dZe)
 plt.scatter(hinge, bcZ)
+plt.plot(xx,-dYe)
+plt.scatter(hinge, bcY)
 plt.show()
+
 
     
