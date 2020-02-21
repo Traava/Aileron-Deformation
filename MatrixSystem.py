@@ -7,14 +7,17 @@ import MoI
 
 
 
-#test variables:
+#variables:
 
 Izz = MoI.Izz_Aileron
 Iyy = MoI.Iyy_Aileron
-J = Iyy+Izz
+J = 0.000175317141188
 theta = theta_max
 zh = zhat
 hh = zh- h/2
+
+la = al.x_coor[-1]
+
 
 
 
@@ -22,15 +25,42 @@ A = np.zeros((9,9))
 
 #Macaulay step function
 def Mac(x):
-    return (max(x,0))
+    if np.ndim(x) == 0:
+        return (max(x,0))
+    elif np.ndim(x) == 1:
+        negatives = x < 0
+        x[negatives] = 0
+        return x
+    else:
+        return 'Failed Macaulay'
+        
 #INTEGRALS
 def Q1(x):
-    return al.integration(1, x, al.q_tilde, al.x_coor)
+    if np.ndim(x) == 0:
+        return al.integration(1, x, al.q_tilde, al.x_coor)
+    elif np.ndim(x) == 1:
+        integ = np.zeros(np.shape(x))
+        for i in x:
+            integ[i] = al.integration(1, i, al.q_tilde, al.x_coor)
+        return integ
 
 def Q4(x):
-    return al.integration(4, x, al.q_tilde, al.x_coor)
+    if np.ndim(x) == 0:
+        return al.integration(4, x, al.q_tilde, al.x_coor)
+    elif np.ndim(x) == 1:
+        integ = np.zeros(np.shape(x))
+        for i in range(len(x)):
+            integ[i] = al.integration(4, x[i], al.q_tilde, al.x_coor)
+        return integ
+    
 def tao2(x):
-    return al.integration(4, x, al.qT_tilde, al.x_coor)
+    if np.ndim(x) == 0:
+        return al.integration(4, x, al.qT_tilde, al.x_coor)
+    elif np.ndim(x) == 1:
+        integ = np.zeros(np.shape(x))
+        for i in range(len(x)):
+            integ[i] = al.integration(4, x[i], al.qT_tilde, al.x_coor)
+        return integ
 def aero_Mx(x):
     return al.integration(1,x,(al.CoPs-np.ones(len(al.CoPs))*h/2)*al.q_tilde, al.x_coor)
 def aero_Mz(x):
@@ -40,6 +70,7 @@ def aero_Mz(x):
 
 #coeff. for Ry1, Ry2, Ry3:
 def F1_Ry123(x, xn):
+    
     return 1/(6*E*Izz)*Mac(x-xn)**3 + hh/(G*J)*Mac(x-xn)
 
 #coeff. for RaI, RaII:
@@ -58,7 +89,7 @@ F1_C2 = 1
 #tao2 is torque of aerodynamics
 
 def F1_const(x):
-    return 1/E*Izz*Q4(x)  + hh/(G*J)* tao2(x)
+    return 1/(E*Izz)*Q4(x)  + hh/(G*J)* tao2(x)
 
 #constant
 
@@ -72,7 +103,7 @@ def F2_RaIaII(x,xn):
     return 1/(6*E*Iyy)*cos(theta)*Mac(x-xn)**3
 
 def F2_const(x):
-    return 1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
+    return -1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
 
 
 ################################################################
@@ -120,17 +151,17 @@ a9 = [0,0,0, F2_Rz123(x2,x1), F2_Rz123(x2,x2), F2_Rz123(x2,x3), F2_RaIaII(x2, xa
 a10 = [F1_Ry123(x3,x1), F1_Ry123(x3,x2), F1_Ry123(x3, x3), 0,0,0,F1_RaIaII(x3, xaI), x3, 1,0,0,hh]
 a11 = [0,0,0, F2_Rz123(x3,x1), F2_Rz123(x3,x2), F2_Rz123(x3,x3), F2_RaIaII(x3, xaI), 0, 0, x3, 1, 0]
 a12 = [F3A_Ry123(xaI, x1)+F3B_Ry123(xaI, x1), F3A_Ry123(xaI,x2)+F3B_Ry123(xaI,x2), F3A_Ry123(xaI, x3)+F3B_Ry123(xaI, x3), 
-       F3B_Rz123(xaI, x1), F3B_Rz123(xaI, x2), F3B_Rz123(xaI, x3), F3A_RaIaII(xaI,xaI)+F3B_RaIaII(xaI,xaI), xaI, 1, 0,0,hh]
+       F3B_Rz123(xaI, x1), F3B_Rz123(xaI, x2), F3B_Rz123(xaI, x3), F3A_RaIaII(xaI,xaI)+F3B_RaIaII(xaI,xaI), xaI*sin(theta), sin(theta), xaI*cos(theta),cos(theta),zh*sin(theta)-h/2*cos(theta)]
 
  
-b1 = [-P*sin(theta) + Q1(la-0.01)]
-b2 = [-P*sin(theta)]
-b3 = [P*h/2*(cos(theta)-sin(theta)) + aero_Mx(la-0.01) ]
+b1 = [-P*sin(theta) + Q1(la)]
+b2 = [-P*cos(theta)]
+b3 = [P*h/2*(cos(theta)-sin(theta)) + aero_Mx(la) ]
 b4 = [P*cos(theta)*(xaII-x1)]
-b5 = [-P*sin(theta)*(xaII-xaI) - aero_Mz(la-0.01)]
+b5 = [-P*sin(theta)*(xaII-xaI) - aero_Mz(la)]
 b6 = [-d1*cos(theta) - F1_const(x1)]
 b7 = [d1*sin(theta) - F2_const(x1)]
-b8 = [- F1_const(x2)]
+b8 = [- F1_const(x2) ]
 b9 = [- F2_const(x2)]
 b10 = [-d3*cos(theta) - F1_const(x3)]
 b11 = [d3*sin(theta) - F2_const(x3)]
@@ -170,7 +201,61 @@ C2 = X[8]
 C3 = X[9]
 C4 = X[10]
 C5  = X[11]
-    
+
+### matrix equations verification
 sumFy = Ry1 + Ry2 + Ry3 + RaI*sin(theta) + P*sin(theta) - Q1(la-0.01)
+sumFz = Rz1 + Rz2 + Rz3 + RaI*cos(theta) + P*cos(theta)
+sumMx = RaI*h*(sin(theta)-cos(theta))/2 - P*h*(cos(theta)-sin(theta))/2 - aero_Mx(la)
+sumMy = (x1-x2)*Rz2 + (x1-x3)*Rz3 + (x1-xaI)*cos(theta)*RaI - P*cos(theta)*(xaII-x1)
+sumMz = Ry1*(xaI-x1) + Ry2*(x2-xaI) + Ry3*(x3-xaI) + P*sin(theta)*(xaII-xaI) + aero_Mz(la)
+
+BC1 = 1/(E*Izz)*Q4(x1) + hh/(G*J)*tao2(x1) + hh*C5 + C1*x1 + C2 + d1*cos(theta)
+BC2 = C3*x1 + C4 -d1*sin(theta)
+BC3 = F1_Ry123(x2,x1)*Ry1 + F1_RaIaII(x2, xaI)*RaI + 1/(E*Izz)*Q4(x2) + hh/(G*J)*tao2(x2) + C1*x2 + C2 + hh*C5
+BC4 = 1/(6*E*Iyy)*( Rz1*Mac(x2-x1)**3 + RaI*cos(theta)*Mac(x2-xaI)**3 ) + C3*x2 + C4
+BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_RaIaII(x3,xaII)*P + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta)
+
+###
+
+
+###
+def v(x):
+    return 1/(E*Izz)* ( 1/6 *Ry1*Mac(x-x1)**3 + 1/6 *Ry2*Mac(x-x2)**3 + 1/6 *Ry3*Mac(x-x3)**3 
+              + 1/6 *RaI*sin(theta)*Mac(x-xaI)**3 + 1/6 *P*sin(theta)*Mac(x-xaII)**3  - Q4(x) ) + C1*x + C2
+              
+              
+    
+    
+def w(x):
+    return 1/(E*Iyy) * ( 1/6*Rz1*Mac(x-x1)**3 + 1/6*Rz2*Mac(x-x2)**3 + 1/6*Rz3*Mac(x-x3)**3 
+              + 1/6*RaI*cos(theta)*Mac(x-xaI)**3 + 1/6*P*cos(theta)*Mac(x-xaII)**3 )  + C3*x + C4
+    
+def phi(x):
+    return 1/(G*J) * ( Ry1*hh*Mac(x-x1) + Ry2*hh*Mac(x-x2) + Ry3*hh*Mac(x-x3) 
+              + RaI*Mac(x-xaI)*(zh*sin(theta) - h/2*cos(theta)) 
+              + P*Mac(x-xaII)*(zh*sin(theta) - h/2*cos(theta)) 
+              + tao2(x) )  +  C5
  
- 
+import matplotlib.pyplot as plt
+
+xx = np.linspace(0,la, 100)
+
+dY = v(xx) + hh*phi(xx)
+
+dYe = dY*cos(theta) - w(xx)*sin(theta)
+dZe = w(xx)*cos(theta)+dY*sin(theta)
+
+
+
+hinge = [x1,x2,x3]
+bcY = [d1,0,d3]
+bcZ = [0,0,0]
+
+plt.plot(xx,dZe)
+plt.scatter(hinge, bcZ)
+plt.plot(xx,-dYe)
+plt.scatter(hinge, bcY)
+plt.show()
+
+
+    

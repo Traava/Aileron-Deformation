@@ -180,32 +180,24 @@ red = (255,160,122)
 x_cr = []
 z_cr = []
 
-#Creating the mesh coordinates (xi,zj)
-# for xi in x_coor:
-#     for zj in z_coor:
-#         x_cr.append(xi)
-#         z_cr.append(zj)
-#
-# #Plotting
-# plt.scatter(x_cr,z_cr,s = 3)
-# plt.ylim(ymin=0,ymax = Ca)
-# plt.xlim(xmin = 0, xmax = la)
-# plt.ylabel("z [m]").set_size(15)
-# plt.xlabel("x [m]").set_size(15)
-# plt.show()
-#
-# #Value verification
-#
-# print("Smallest value of x is: ",x_coor[0])
-# print("Smallest value of z is: ",z_coor[0])
-# print("Largest value of x is: ",x_coor[-1]-la)
-# print("Largest value of z is: ",z_coor[-1])
+#Plotting
+if __name__ =='__main__':
+    for xi in x_coor:
+        for zj in z_coor:
+            x_cr.append(xi)
+            z_cr.append(zj)
+    plt.scatter(x_cr,z_cr,s = 3)
+    plt.ylim(ymin=0,ymax = Ca)
+    plt.xlim(xmin = 0, xmax = la)
+    plt.ylabel("z [m]").set_size(15)
+    plt.xlabel("x [m]").set_size(15)
+    plt.show()
+    print("Smallest value of x is: ",x_coor[0])
+    print("Smallest value of z is: ",z_coor[0])
+    print("Largest value of x is: ",x_coor[-1]-la)
+    print("Largest value of z is: ",z_coor[-1])
 
 "Unit 2.2 Verification"
-
-
-plt.scatter(x_coor,q_tilde, c = red)
-plt.show()
 
 #----- This is basically for visual verification of the preciseness of the spline interpolation
 # coef_mat = interpol(q_tilde,x_coor,0,0)
@@ -221,6 +213,3 @@ plt.show()
 #
 # plt.plot(points,values)
 # plt.show()
-
-print(integration(1,la,q_tilde,x_coor))
-print(x_coor)
