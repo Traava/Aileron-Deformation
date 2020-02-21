@@ -149,10 +149,13 @@ def integration(n,x,func,coor):
     for i in range(n):                                      #integrate n times
         func_coefs = int_ana(func_coefs,coor)
 
-    for j in range(len(coor)):
-        if coor[j] >= x:                                     #this to find the actual value corresponding to our x
-            output = polynomial(x,func_coefs[j-1])
-            break
+    if x<coor[0]:
+        return 0
+    else:
+        for j in range(1,len(coor)):
+            if coor[j] >= x:                                     #this to find the actual value corresponding to our x
+                output = polynomial(x,func_coefs[j-1])
+                break
 
     return output
 
@@ -187,6 +190,7 @@ plt.xlabel("x [m]").set_size(15)
 plt.show()
 
 #Value verification
+
 print("Smallest value of x is: ",x_coor[0])
 print("Smallest value of z is: ",z_coor[0])
 print("Largest value of x is: ",x_coor[-1])
@@ -206,3 +210,6 @@ print("Largest value of z is: ",z_coor[-1])
 #
 # plt.plot(points,values)
 # plt.show()
+
+print(integration(1,la,q_tilde,x_coor))
+print(x_coor)
