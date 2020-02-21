@@ -182,12 +182,13 @@ for xi in x_coor:
         z_cr.append(zj)
 
 #Plotting
-plt.scatter(x_cr,z_cr,s = 3)
-plt.ylim(ymin=0,ymax = Ca)
-plt.xlim(xmin = 0, xmax = la)
-plt.ylabel("z [m]").set_size(15)
-plt.xlabel("x [m]").set_size(15)
-plt.show()
+if __name__ =='__main__':
+    plt.scatter(x_cr,z_cr,s = 3)
+    plt.ylim(ymin=0,ymax = Ca)
+    plt.xlim(xmin = 0, xmax = la)
+    plt.ylabel("z [m]").set_size(15)
+    plt.xlabel("x [m]").set_size(15)
+    plt.show()
 
 #Value verification
 
