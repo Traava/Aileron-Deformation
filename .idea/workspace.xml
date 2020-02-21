@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3b459914-8a16-49af-9708-ea0858ed56fa" name="Default Changelist" comment="" />
+    <list default="true" id="3b459914-8a16-49af-9708-ea0858ed56fa" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Aero_load.py" beforeDir="false" afterPath="$PROJECT_DIR$/Aero_load.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,14 +95,37 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Aileron-Deformation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\marek\AppData\Local\Programs\Python\Python38\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main (1).py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="true" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.Aero_load (1)" />
       <item itemvalue="Python.Aero_load" />
+      <item itemvalue="Python.main (1)" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.Aero_load" />
         <item itemvalue="Python.Aero_load (1)" />
+        <item itemvalue="Python.main (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -141,30 +167,30 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="419" y="7" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1582031661445" />
-    <state width="1515" height="87" key="GridCell.Tab.0.bottom" timestamp="1582242013111">
+    <state width="1515" height="439" key="GridCell.Tab.0.bottom" timestamp="1582279130826">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="87" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1582242013111" />
-    <state width="1515" height="87" key="GridCell.Tab.0.center" timestamp="1582242013111">
+    <state width="1515" height="439" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1582279130826" />
+    <state width="1515" height="439" key="GridCell.Tab.0.center" timestamp="1582279130825">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="87" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1582242013111" />
-    <state width="1515" height="87" key="GridCell.Tab.0.left" timestamp="1582242013111">
+    <state width="1515" height="439" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1582279130825" />
+    <state width="1515" height="439" key="GridCell.Tab.0.left" timestamp="1582279130825">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="87" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1582242013111" />
-    <state width="1515" height="87" key="GridCell.Tab.0.right" timestamp="1582242013111">
+    <state width="1515" height="439" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1582279130825" />
+    <state width="1515" height="439" key="GridCell.Tab.0.right" timestamp="1582279130825">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="87" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1582242013111" />
+    <state width="1515" height="439" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1582279130825" />
     <state x="555" y="58" key="SettingsEditor" timestamp="1582026792823">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="555" y="58" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1582026792823" />
-    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1582216184620">
+    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1582279170459">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1582216184620" />
+    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1582279170459" />
     <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1582056033437">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

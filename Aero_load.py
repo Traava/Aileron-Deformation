@@ -150,7 +150,7 @@ def integration(n,x,func,coor):
         func_coefs = int_ana(func_coefs,coor)
 
     for j in range(len(coor)):
-        if coor[j] > x:                                     #this to find the actual value corresponding to our x
+        if coor[j] >= x:                                     #this to find the actual value corresponding to our x
             output = polynomial(x,func_coefs[j-1])
             break
 
@@ -160,11 +160,37 @@ def integration(n,x,func,coor):
 
 
 #VERIFICATION BELOW
-print(CoPs/Ca)
-print(integration(1,1.6,q_tilde,x_coor))
+#print(CoPs/Ca)
+la = x_coor[-1]
+print(integration(1,la,q_tilde,x_coor))
+print(x_coor)
+print(la)
 
 
+"UNIT 2.1 Verification"
 
+x_cr = []
+z_cr = []
+
+#Creating the mesh coordinates (xi,zj)
+for xi in x_coor:
+    for zj in z_coor:
+        x_cr.append(xi)
+        z_cr.append(zj)
+
+#Plotting
+plt.scatter(x_cr,z_cr,s = 3)
+plt.ylim(ymin=0,ymax = Ca)
+plt.xlim(xmin = 0, xmax = la)
+plt.ylabel("z [m]").set_size(15)
+plt.xlabel("x [m]").set_size(15)
+plt.show()
+
+#Value verification
+print("Smallest value of x is: ",x_coor[0])
+print("Smallest value of z is: ",z_coor[0])
+print("Largest value of x is: ",x_coor[-1])
+print("Largest value of z is: ",z_coor[-1])
 
 #----- This is basically for visual verification of the preciseness of the spline interpolation
 # coef_mat = interpol(q_tilde,x_coor,0,0)
