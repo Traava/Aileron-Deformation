@@ -68,7 +68,7 @@ plt.show()
 #        np.append(sigmax,sigmax_i)
 #        i= i+1
 #    np.append(sigmax,bending_stresses)
-#    k=k+1
+#    x=x+1
 
 
 
