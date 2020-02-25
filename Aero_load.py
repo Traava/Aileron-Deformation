@@ -127,7 +127,7 @@ def int_span(coef_mat,coor):
     for j in range(1,dim):
         integrated = 0
         for k in range(j):                                         #need to sum all contributions up until the point we are looking at
-            integrated += contributions[k-1]
+            integrated += contributions[k]
         integrated_vals[j] = integrated
 
     return integrated_vals
@@ -161,43 +161,66 @@ def integration(n,x,func,coor):
 
 
 
-
-#VERIFICATION BELOW
-#print(CoPs/Ca)
-la = x_coor[-1]
-print(integration(1,la,q_tilde,x_coor))
-print(x_coor)
-print(la)
+print(integration(2,1,q_tilde,x_coor))
 
 
-"UNIT 2.1 Verification"
 
-x_cr = []
-z_cr = []
 
-#Creating the mesh coordinates (xi,zj)
-for xi in x_coor:
-    for zj in z_coor:
-        x_cr.append(xi)
-        z_cr.append(zj)
-
-#Plotting
-if __name__ =='__main__':
-    plt.scatter(x_cr,z_cr,s = 3)
-    plt.ylim(ymin=0,ymax = Ca)
-    plt.xlim(xmin = 0, xmax = la)
-    plt.ylabel("z [m]").set_size(15)
-    plt.xlabel("x [m]").set_size(15)
-    plt.show()
-
-#Value verification
-
-print("Smallest value of x is: ",x_coor[0])
-print("Smallest value of z is: ",z_coor[0])
-print("Largest value of x is: ",x_coor[-1])
-print("Largest value of z is: ",z_coor[-1])
-
-#----- This is basically for visual verification of the preciseness of the spline interpolation
+#
+# "UNIT 2.1 Verification"
+#
+# x_cr = []
+# z_cr = []
+#
+# #Plotting
+# if __name__ =='__main__':
+#     for xi in x_coor:
+#         for zj in z_coor:
+#             x_cr.append(xi)
+#             z_cr.append(zj)
+#     plt.scatter(x_cr,z_cr,s = 3)
+#     plt.ylim(ymin=0,ymax = Ca)
+#     plt.xlim(xmin = 0, xmax = la)
+#     plt.ylabel("z [m]").set_size(15)
+#     plt.xlabel("x [m]").set_size(15)
+#     plt.show()
+#     print("Smallest value of x is: ",x_coor[0])
+#     print("Smallest value of z is: ",z_coor[0])
+#     print("Largest value of x is: ",x_coor[-1]-la)
+#     print("Largest value of z is: ",z_coor[-1])
+#
+# "Unit 2.2 Verification"
+# plt.plot(x_coor,qT_tilde,'o', color = 'red')
+# plt.ylabel("Spanwise lift distribution [N/m]").set_size(15)
+# plt.xlabel("x [m]").set_size(15)
+# plt.grid()
+# plt.show()
+#
+# print("Average center of pressure position is ", sum(CoPs)/len(CoPs)/Ca, "% of the chord")
+#
+# coors = [0,1,2,3]
+# line_pts = [0,1,2,3]
+# parab_pts = [0,1,4,9]
+# line_int = 0
+# parab_int = 0
+#
+# for k in range(len(coors)-1):
+#     segm_len = coors[k + 1] - coors[k]
+#     dA1 = segm_len * (line_pts[k] + line_pts[k+1])/2
+#     dA2 = segm_len * (parab_pts[k] + parab_pts[k+1])/2
+#     line_int += dA1
+#     parab_int += dA2
+#
+# print("Integrating y=x between 0 and 3 gives: ", line_int)
+# print("Integrating y=x^2 between 0 and 3 gives: ", parab_int)
+#
+#
+# "Unit 2.3 Verification"
+#
+# coef_mat_line = interpol(line_pts,coors,0,0)
+# print(coef_mat_line)
+#
+# #----- This is basically for visual verification of the preciseness of the spline interpolation
 # coef_mat = interpol(q_tilde,x_coor,0,0)
 # points = []
 # values = []
@@ -209,8 +232,92 @@ print("Largest value of z is: ",z_coor[-1])
 #         points.append(x_coor[i]+h_i*j/n)
 #         values.append(polynomial(x_coor[i]+h_i*j/n,coefs))
 #
-# plt.plot(points,values)
+# plt.plot(points,values,color = 'black')
+# plt.plot(x_coor,q_tilde,'o', color = 'red')
+# plt.ylabel("Spanwise lift distribution [N/m]").set_size(15)
+# plt.xlabel("x [m]").set_size(15)
+# plt.grid()
+# plt.show()
+#
+# "Unit 2.4 Verification"
+#
+# x = np.arange(0,10.01,0.01)
+#
+# coefs1 = [4,3,2,1]
+# test1 = np.ones(len(x))*4+3*x+2*x**2+x**3
+#
+# coefs2 = [5,4,0,0,0]
+# test2 = np.ones(len(x))*5+4*x
+#
+# plt.figure()
+#
+# plt.subplot(121)
+# plt.plot(x,polynomial(x,coefs1), color = 'black')
+# plt.xlim(xmin = 0, xmax = 10)
+# plt.xlabel("x[-]")
+# plt.ylim(ymin = 0)
+# plt.ylabel("y[-]")
+# plt.text(1,max(polynomial(x,coefs1))/1.3,"polynomial(x,[4,3,2,1])",bbox=dict(facecolor='grey', alpha=0.5))
+# plt.grid()
+#
+# plt.subplot(122)
+# plt.plot(x,test1)
+# plt.xlim(xmin = 0, xmax = 10)
+# plt.xlabel("x[-]")
+# plt.ylim(ymin = 0)
+# plt.ylabel("y[-]")
+# plt.text(1,max(polynomial(x,coefs1))/1.3,"y = $4$+$3x$+$2x^2$+$1x^3$",bbox=dict(facecolor='grey', alpha=0.5))
+# plt.grid()
+#
+# plt.show()
+#
+# plt.plot(x,polynomial(x,coefs2))
+# plt.plot(x,test2)
+# plt.xlim(xmin = 0, xmax = 10)
+# plt.ylim(ymin = 0)
 # plt.show()
 
-print(integration(1,la,q_tilde,x_coor))
-print(x_coor)
+"Unit 2.5 Verification"
+
+print(int_pol([5,4,3,2,1],1,5))
+print(int_pol([6,7,4,5],4,7))
+print(int_pol([3],0,10))
+print(int_pol([5,6,3,2,1,7],2,6))
+
+
+"Unit 2.6 Verification"
+
+integrated_lift = int_span(interpol(q_tilde,x_coor,0,0),x_coor)
+
+plt.plot(x_coor,q_tilde, color = 'red',label = 'Lift distribution [N/m]')
+plt.plot(x_coor,integrated_lift,'o', color = 'orange', label = 'Integrated lift [N]')
+
+plt.xlabel("x[m]")
+
+plt.ylabel("Function value [N/m] or [N]")
+plt.legend()
+plt.grid()
+plt.show()
+
+Area = 0
+for k in range(len(x_coor)-1):
+    segm_len = x_coor[k + 1] - x_coor[k]
+    dA = segm_len * (q_tilde[k] + q_tilde[k+1])/2
+    Area+=dA
+
+print("Trapezoidal rule gives a total lift of: ", Area, "N")
+print("Int_span function gives a total lift of: ", integrated_lift[-1], "N")
+
+
+
+# x0,xn = 0,1.0
+# subspaces = 40
+# x_i = np.linspace(x0,xn,subspaces+1)
+#
+# #test function
+# def f_runge(x):
+#     return x**2
+#
+# y_i = f_runge(x_i)
+#
+# print(integration(4,0.5,y_i,x_i))
