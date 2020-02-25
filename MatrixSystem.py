@@ -4,7 +4,8 @@ import scipy as sp
 from variables import *
 import Aero_load as al
 import MoI
-
+import seaborn as sns
+sns.set()
 
 
 #variables:
@@ -20,9 +21,9 @@ la = al.x_coor[-1]
 
 
 
-
 A = np.zeros((9,9))
 
+"Unit 3.1"
 #Macaulay step function
 def Mac(x):
     if np.ndim(x) == 0:
@@ -33,8 +34,22 @@ def Mac(x):
         return x
     else:
         return 'Failed Macaulay'
-        
-#INTEGRALS
+    
+def MacTest():
+    #array of test values
+    testVal = np.arange(-8, 12, 0.97)
+    
+    #testing Macaulay of scalars
+    for val in testVal:
+        print('[',val,'] = ',Mac(val))
+    print()
+    #testing Macaulay of array
+    print(testVal)
+    print(Mac(testVal))
+     
+    
+"Unit 3.2"    
+#Integral of aerodynamic load distribution over x
 def Q1(x):
     if np.ndim(x) == 0:
         return al.integration(1, x, al.q_tilde, al.x_coor)
@@ -44,6 +59,7 @@ def Q1(x):
             integ[i] = al.integration(1, i, al.q_tilde, al.x_coor)
         return integ
 
+#four-time integral of aerodynamic load distribution over x
 def Q4(x):
     if np.ndim(x) == 0:
         return al.integration(4, x, al.q_tilde, al.x_coor)
@@ -53,14 +69,25 @@ def Q4(x):
             integ[i] = al.integration(4, x[i], al.q_tilde, al.x_coor)
         return integ
     
+#Q_test = []
+#for x in al.x_coor:
+#    Q_test.append(Q1(x))
+#    
+#plt.plot(al.x_coor, Q_test, al.x_coor, al.q_tilde)
+#plt.show()
+    
+
+#Two-time integral of torque distribution over x"
 def tao2(x):
     if np.ndim(x) == 0:
-        return al.integration(4, x, al.qT_tilde, al.x_coor)
+        return al.integration(2, x, al.qT_tilde, al.x_coor)
     elif np.ndim(x) == 1:
         integ = np.zeros(np.shape(x))
         for i in range(len(x)):
-            integ[i] = al.integration(4, x[i], al.qT_tilde, al.x_coor)
+            integ[i] = al.integration(2, x[i], al.qT_tilde, al.x_coor)
         return integ
+    
+"Unit 3.3"
 def aero_Mx(x):
     return al.integration(1,x,(al.CoPs-np.ones(len(al.CoPs))*h/2)*al.q_tilde, al.x_coor)
 def aero_Mz(x):
@@ -70,28 +97,18 @@ def aero_Mz(x):
 
 #coeff. for Ry1, Ry2, Ry3:
 def F1_Ry123(x, xn):
-    
-    return 1/(6*E*Izz)*Mac(x-xn)**3 + hh/(G*J)*Mac(x-xn)
+    return 1/(6*E*Izz)*Mac(x-xn)**3 + (hh)**2/(G*J)*Mac(x-xn) 
 
 #coeff. for RaI, RaII:
 def F1_RaIaII(x, xn):
     return 1/(6*E*Izz)* sin(theta) * Mac(x - xn)**3 +hh/(G*J)*Mac(x-xn)*(zh*sin(theta)-h/2*cos(theta))
 
-#coeff for C1
-def F1_C1(x):
-    return x
-
-#coeff for C2
-F1_C2 = 1
 
 #constant values 
-#Q4 is four-time-integral of q(x)
-#tao2 is torque of aerodynamics
-
 def F1_const(x):
     return 1/(E*Izz)*Q4(x)  + hh/(G*J)* tao2(x)
 
-#constant
+
 
 ################################################################
 
@@ -103,7 +120,7 @@ def F2_RaIaII(x,xn):
     return 1/(6*E*Iyy)*cos(theta)*Mac(x-xn)**3
 
 def F2_const(x):
-    return -1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
+    return 1/(6*E*Iyy)*P*cos(theta)*Mac(x-xaII)**3
 
 
 ################################################################
@@ -154,18 +171,20 @@ a12 = [F3A_Ry123(xaI, x1)+F3B_Ry123(xaI, x1), F3A_Ry123(xaI,x2)+F3B_Ry123(xaI,x2
        F3B_Rz123(xaI, x1), F3B_Rz123(xaI, x2), F3B_Rz123(xaI, x3), F3A_RaIaII(xaI,xaI)+F3B_RaIaII(xaI,xaI), xaI*sin(theta), sin(theta), xaI*cos(theta),cos(theta),zh*sin(theta)-h/2*cos(theta)]
 
  
-b1 = [-P*sin(theta) + Q1(la)]
+b1 = [-P*sin(theta) - Q1(la)]
 b2 = [-P*cos(theta)]
 b3 = [P*h/2*(cos(theta)-sin(theta)) + aero_Mx(la) ]
 b4 = [P*cos(theta)*(xaII-x1)]
 b5 = [-P*sin(theta)*(xaII-xaI) - aero_Mz(la)]
-b6 = [-d1*cos(theta) - F1_const(x1)]
+b6 = [-d1*cos(theta) - F1_const(x1) - F1_RaIaII(x1, xaII)*P ]
 b7 = [d1*sin(theta) - F2_const(x1)]
-b8 = [- F1_const(x2) ]
+b8 = [- F1_const(x2) - F1_RaIaII(x2, xaII)*P]
 b9 = [- F2_const(x2)]
-b10 = [-d3*cos(theta) - F1_const(x3)]
+b10 = [-d3*cos(theta) - F1_const(x3)- F1_RaIaII(x3, xaII)*P]
 b11 = [d3*sin(theta) - F2_const(x3)]
 b12 = [-F3A_const(xaI) - F3B_const(xaI)]
+
+
 
 alst = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12]
 
@@ -203,7 +222,7 @@ C4 = X[10]
 C5  = X[11]
 
 ### matrix equations verification
-sumFy = Ry1 + Ry2 + Ry3 + RaI*sin(theta) + P*sin(theta) - Q1(la-0.01)
+sumFy = Ry1 + Ry2 + Ry3 + RaI*sin(theta) + P*sin(theta) + Q1(la)
 sumFz = Rz1 + Rz2 + Rz3 + RaI*cos(theta) + P*cos(theta)
 sumMx = RaI*h*(sin(theta)-cos(theta))/2 - P*h*(cos(theta)-sin(theta))/2 - aero_Mx(la)
 sumMy = (x1-x2)*Rz2 + (x1-x3)*Rz3 + (x1-xaI)*cos(theta)*RaI - P*cos(theta)*(xaII-x1)
@@ -213,19 +232,23 @@ BC1 = 1/(E*Izz)*Q4(x1) + hh/(G*J)*tao2(x1) + hh*C5 + C1*x1 + C2 + d1*cos(theta)
 BC2 = C3*x1 + C4 -d1*sin(theta)
 BC3 = F1_Ry123(x2,x1)*Ry1 + F1_RaIaII(x2, xaI)*RaI + 1/(E*Izz)*Q4(x2) + hh/(G*J)*tao2(x2) + C1*x2 + C2 + hh*C5
 BC4 = 1/(6*E*Iyy)*( Rz1*Mac(x2-x1)**3 + RaI*cos(theta)*Mac(x2-xaI)**3 ) + C3*x2 + C4
-BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_RaIaII(x3,xaII)*P + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta)
 
+BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta)
+
+aa10 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + C1*x3 + C2 + C5*hh
+bb10 = -d3*cos(theta) - F1_const(x3)
+
+BC6 = F2_Rz123(x3,x1)*Rz1 + F2_Rz123(x3,x2)*Rz2 + F2_RaIaII(x3,xaI)*RaI + F2_RaIaII(x3,xaII)*P  +C3*x3 + C4 - d3*sin(theta)
+
+BC7 = F3A_Ry123(xaI, x1)*Ry1 + F3B_Ry123(xaI,x1)*Ry1 + F3B_Rz123(xaI,x1)*Rz1 + F3A_const(xaI) + F3B_const(xaI) + C1*xaI*sin(theta) + C2*sin(theta) + C3*xaI*cos(theta) + C4*cos(theta)+ (zh*sin(theta)-h/2*cos(theta))*C5
 ###
 
 
 ###
 def v(x):
     return 1/(E*Izz)* ( 1/6 *Ry1*Mac(x-x1)**3 + 1/6 *Ry2*Mac(x-x2)**3 + 1/6 *Ry3*Mac(x-x3)**3 
-              + 1/6 *RaI*sin(theta)*Mac(x-xaI)**3 + 1/6 *P*sin(theta)*Mac(x-xaII)**3  - Q4(x) ) + C1*x + C2
+              + 1/6 *RaI*sin(theta)*Mac(x-xaI)**3 + 1/6 *P*sin(theta)*Mac(x-xaII)**3  + Q4(x) ) + C1*x + C2
               
-              
-    
-    
 def w(x):
     return 1/(E*Iyy) * ( 1/6*Rz1*Mac(x-x1)**3 + 1/6*Rz2*Mac(x-x2)**3 + 1/6*Rz3*Mac(x-x3)**3 
               + 1/6*RaI*cos(theta)*Mac(x-xaI)**3 + 1/6*P*cos(theta)*Mac(x-xaII)**3 )  + C3*x + C4
@@ -248,13 +271,37 @@ dZe = w(xx)*cos(theta)+dY*sin(theta)
 
 
 hinge = [x1,x2,x3]
+aIaII = [xaI, xaII]
 bcY = [d1,0,d3]
 bcZ = [0,0,0]
 
-plt.plot(xx,dZe)
-plt.scatter(hinge, bcZ)
-plt.plot(xx,-dYe)
-plt.scatter(hinge, bcY)
+#
+
+def Mz(x):
+    M = np.zeros(np.shape(x))
+    for i in range(len(x)):
+        M[i] = -Ry1*Mac(x[i]-x1) - Ry2*Mac(x[i]-x2) - Ry3*Mac(x[i]-x3) - RaI*sin(theta)*Mac(x[i]-xaI) - P*sin(theta)*Mac(x[i]-xaII) - al.integration(2,x[i],al.q_tilde,al.x_coor)
+    return M
+
+
+def My(x):
+    M = np.zeros(np.shape(x))
+    for i in range(len(x)):
+        M[i] = -Rz1*Mac(x[i]-x1) - Rz2*Mac(x[i]-x2) - Rz3*Mac(x[i]-x3) - RaI*cos(theta)*Mac(x[i]-xaI) - P*cos(theta)*Mac(x[i]-xaII)
+    return M
+
+plt.plot(xx,Mz(xx))
+
+plt.plot(xx,My(xx))
+#plt.plot(xx,phi(xx))
+
+
+
+#plt.plot(xx,dZe)
+#plt.scatter(hinge, bcZ)
+#plt.plot(xx,-dYe)
+#plt.scatter(hinge, bcY)
+#plt.scatter(aIaII,[0,0])
 plt.show()
 
 
