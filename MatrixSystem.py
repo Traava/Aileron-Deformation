@@ -95,6 +95,8 @@ def aero_Mz(x):
 
 #########################Form 1####################### Form 1: v(x) +hh*phi(x)  
 
+
+"Unit 3.4"
 #coeff. for Ry1, Ry2, Ry3:
 def F1_Ry123(x, xn):
     return 1/(6*E*Izz)*Mac(x-xn)**3 + (hh)**2/(G*J)*Mac(x-xn) 
@@ -152,8 +154,8 @@ def F3B_const(x):
 
 ##################################################################
 
+"Unit 3.5"
 #IMPLENTING THE MATRIX
-
 Xdef = ['Ry1','Ry2','Ry3','Rz1','Rz2','Rz3','RaI','C1','C2','C3','C4','C5']  
 
 a1 = [1,1,1,0,0,0,sin(theta), 0,0,0,0,0]
@@ -233,10 +235,7 @@ BC2 = C3*x1 + C4 -d1*sin(theta)
 BC3 = F1_Ry123(x2,x1)*Ry1 + F1_RaIaII(x2, xaI)*RaI + 1/(E*Izz)*Q4(x2) + hh/(G*J)*tao2(x2) + C1*x2 + C2 + hh*C5
 BC4 = 1/(6*E*Iyy)*( Rz1*Mac(x2-x1)**3 + RaI*cos(theta)*Mac(x2-xaI)**3 ) + C3*x2 + C4
 
-BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta)
-
-aa10 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + C1*x3 + C2 + C5*hh
-bb10 = -d3*cos(theta) - F1_const(x3)
+BC5 = F1_Ry123(x3,x1)*Ry1 + F1_Ry123(x3,x2)*Ry2 + F1_RaIaII(x3,xaI)*RaI + F1_const(x3) + C1*x3 + C2 + hh*C5 + d3*cos(theta) + F1_RaIaII(x3, xaII)*P
 
 BC6 = F2_Rz123(x3,x1)*Rz1 + F2_Rz123(x3,x2)*Rz2 + F2_RaIaII(x3,xaI)*RaI + F2_RaIaII(x3,xaII)*P  +C3*x3 + C4 - d3*sin(theta)
 
@@ -276,12 +275,22 @@ bcY = [d1,0,d3]
 bcZ = [0,0,0]
 
 #
-
+def powzero(x):
+    if x ==0:
+        return 0
+    else:
+        return 1.
 def Mz(x):
     M = np.zeros(np.shape(x))
     for i in range(len(x)):
         M[i] = -Ry1*Mac(x[i]-x1) - Ry2*Mac(x[i]-x2) - Ry3*Mac(x[i]-x3) - RaI*sin(theta)*Mac(x[i]-xaI) - P*sin(theta)*Mac(x[i]-xaII) - al.integration(2,x[i],al.q_tilde,al.x_coor)
     return M
+
+def Vy(x):
+    V = np.zeros(np.shape(x))
+    for i in range(len(x)):
+        V[i] = -Ry1*powzero(Mac(x[i]-x1)) - Ry2*powzero(Mac(x[i]-x2)) - Ry3*powzero(Mac(x[i]-x3)) - RaI*sin(theta)*powzero(Mac(x[i]-xaI)) - P*sin(theta)*powzero(Mac(x[i]-xaII)) - al.integration(1,x[i],al.q_tilde,al.x_coor)
+    return V
 
 
 def My(x):
@@ -290,9 +299,17 @@ def My(x):
         M[i] = -Rz1*Mac(x[i]-x1) - Rz2*Mac(x[i]-x2) - Rz3*Mac(x[i]-x3) - RaI*cos(theta)*Mac(x[i]-xaI) - P*cos(theta)*Mac(x[i]-xaII)
     return M
 
-plt.plot(xx,Mz(xx))
+def Vz(x):
+    V = np.zeros(np.shape(x))
+    for i in range(len(x)):
+        V[i] = -Rz1*powzero(Mac(x[i]-x1)) - Rz2*powzero(Mac(x[i]-x2)) - Rz3*powzero(Mac(x[i]-x3)) - RaI*cos(theta)*powzero(Mac(x[i]-xaI)) - P*cos(theta)*powzero(Mac(x[i]-xaII))
+    return V
 
-plt.plot(xx,My(xx))
+
+
+plt.plot(xx,Vz(xx))
+
+plt.plot(xx,Vy(xx))
 #plt.plot(xx,phi(xx))
 
 
