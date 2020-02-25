@@ -44,3 +44,5 @@ x = np.linalg.solve(A,b)
 
 #Step 3: Calculate J with J= 1/Gdtheta/dz
 J = np.asscalar(1/x[2])
+
+print(J)
