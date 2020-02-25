@@ -14,11 +14,11 @@ booms_separation = (2*l_skin + pi*(0.5*h))/11                #circumfrance of th
 #booms are numbered from the one in the leading edge and clockwise
 theta_separation = booms_separation/(h/2)                    #angle of the second boom  with the z-axis, measured from the center of the semi-circular part
 y_b1  = 0
-y_b2  = (0.5*h)*sin(theta_separation)
-y_b3  = 0.5*h - (2*booms_separation - 0.5*pi*(0.5*h))*sin(theta_skin)
-y_b4  = y_b3 - booms_separation*sin(theta_skin)
-y_b5  = y_b4 - booms_separation*sin(theta_skin)
-y_b6  = y_b5 - booms_separation*sin(theta_skin)
+y_b2  = -(0.5*h)*sin(theta_separation)
+y_b3  = -(0.5*h - (2*booms_separation - 0.5*pi*(0.5*h))*sin(theta_skin))
+y_b4  = y_b3 + booms_separation*sin(theta_skin)
+y_b5  = y_b4 + booms_separation*sin(theta_skin)
+y_b6  = y_b5 + booms_separation*sin(theta_skin)
 y_b7  = -y_b6  # Because of symmetry
 y_b8  = -y_b5  # Because of symmetry
 y_b9  = -y_b4  # Because of symmetry
@@ -59,14 +59,12 @@ z2 = np.linspace(0.5*h, Ca, 150)
 y2 = slope*z2 + intercept                   #top skin
 y22 = -y2                                   #lower skin
 
-
-if __name__ == '__main__': #only plot if running this file directly
-    plt.plot(z1,y1, 'k')                        #plotting top quarter
-    plt.plot(z1,y11, 'k')                       #plotting bottom quarter
-    plt.plot(z2,y2, 'k')                        #plotting top skin
-    plt.plot(z2,y22, 'k')                       #plotting bottom skin
-    plt.vlines(x=0.5*h, ymin=-0.5*h, ymax=0.5*h, linewidth = 3)    #plotting spar 
-    plt.plot(z_coordinates,y_coordinates,'ro')   #plotting Booms
+plt.plot(z1,y1, 'k')                        #plotting top quarter
+plt.plot(z1,y11, 'k')                       #plotting bottom quarter
+plt.plot(z2,y2, 'k')                        #plotting top skin
+plt.plot(z2,y22, 'k')                       #plotting bottom skin
+plt.vlines(x=0.5*h, ymin=-0.5*h, ymax=0.5*h, linewidth = 3)    #plotting spar 
+plt.plot(z_coordinates,y_coordinates,'ro')   #plotting Booms
 
 
 
@@ -86,14 +84,14 @@ Area = boom_area*11 + (h*t_sp) + (t_sk*l_skin*2) + (pi*0.5*h*t_sk)      #total a
 centroid = (sum + 2*centroid_skin + centroid_semicircle + centroid_spar)/Area   #Final z-coordinate of the centroid with respect to the leading edge
 
 
-if __name__ == '__main__':  
-    plt.scatter(x = centroid, y=0)                     #plotting the centroid location
-    plt.show()
+plt.scatter(x = centroid, y=0)                     #plotting the centroid location
+
+plt.show()
 
 
 
 #Adjusted z-coordinates of the cross-section with respect to the centroid not the leading edge
-#these coordinated will be used in calculating the contribution of booms in the shear flow
+#these coordinates will be used in calculating the contribution of booms in the shear flow
 z_coordinates_adjusted = np.array([])
 
 for i in range(1,12):
