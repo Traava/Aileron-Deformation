@@ -11,6 +11,7 @@ panel_sep = (2*l_skin + pi*(0.5*h))/(2*n)   #Distance between the panels
 y_coord = np.array(0)
 z_coord = np.array(0)
 
+## still add panel coordinates opposite side
 #coordinates with respect to the leading edge for half of the circumference
 for i in range(1,n+1):
     if i*panel_sep <= h*pi/4:                       #panel is on the arc part of the circumference
@@ -51,19 +52,25 @@ plt.show()
 
 
 #Bending stresses
-#from reaction forces code import Mz, My
+#from MatrixSystem import Mz(x), My(x)
+#la is span of aileron, defined in variables
+#k= np.arange(0,m,1) # where k gives the section number and m the number of sections
+#xsectionlst = np.array()
+#for i in k: # creating an array with coordinates of each section
+#    xsection = (la/m)*(i+1/2) # xcoordinates at which the moments of each cross section are evaluated are in the middle of each section
+#    np.append(xsectionlst, xsection)
 #from MoI import Izz_Aileron, Iyy_Aileron
 #sigmax = np.array(0)
 #bending_stresses = np.array(0)
-#for k in range(1,k+1):          #k is number of sections along the span
+#for x in xsectionlst:          #k is number of sections along the span
 #    for i in range(1,n+1):      #i is each panel along the cross section
-#        sigmax_i = Mz[k]*y_coord[i]/Izz_Aileron + My[k] z_coord[i]/Iyy_Aileron
+#        sigmax_i = Mz[x]*y_coord[i]/Izz_Aileron + My[x] z_coord[i]/Iyy_Aileron
 #        np.append(sigmax,sigmax_i)
 #        i= i+1
 #    np.append(sigmax,bending_stresses)
 #    k=k+1
 
-Mz My
+
 
 
 
