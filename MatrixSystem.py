@@ -307,18 +307,17 @@ def Vz(x):
 
 
 
-plt.plot(xx,Vz(xx))
-
-plt.plot(xx,Vy(xx))
+#plt.plot(xx,Vz(xx))
+#
+#plt.plot(xx,Vy(xx))
 #plt.plot(xx,phi(xx))
 
 
-
-#plt.plot(xx,dZe)
-#plt.scatter(hinge, bcZ)
-#plt.plot(xx,-dYe)
-#plt.scatter(hinge, bcY)
-#plt.scatter(aIaII,[0,0])
+plt.plot(xx,dZe)
+plt.scatter(hinge, bcZ)
+plt.plot(xx,-dYe)
+plt.scatter(hinge, bcY)
+plt.scatter(aIaII,[0,0])
 plt.show()
 
 
