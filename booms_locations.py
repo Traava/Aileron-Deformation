@@ -59,13 +59,13 @@ z2 = np.linspace(0.5*h, Ca, 150)
 y2 = slope*z2 + intercept                   #top skin
 y22 = -y2                                   #lower skin
 
-plt.plot(z1,y1, 'k')                        #plotting top quarter
-plt.plot(z1,y11, 'k')                       #plotting bottom quarter
-plt.plot(z2,y2, 'k')                        #plotting top skin
-plt.plot(z2,y22, 'k')                       #plotting bottom skin
-plt.vlines(x=0.5*h, ymin=-0.5*h, ymax=0.5*h, linewidth = 3)    #plotting spar 
-plt.plot(z_coordinates,y_coordinates,'ro')   #plotting Booms
-
+#plt.plot(z1,y1, 'k')                        #plotting top quarter
+#plt.plot(z1,y11, 'k')                       #plotting bottom quarter
+#plt.plot(z2,y2, 'k')                        #plotting top skin
+#plt.plot(z2,y22, 'k')                       #plotting bottom skin
+#plt.vlines(x=0.5*h, ymin=-0.5*h, ymax=0.5*h, linewidth = 3)    #plotting spar 
+#plt.plot(z_coordinates,y_coordinates,'ro')   #plotting Booms
+#
 
 
 #Centroid Calculations
@@ -84,10 +84,10 @@ Area = boom_area*11 + (h*t_sp) + (t_sk*l_skin*2) + (pi*0.5*h*t_sk)      #total a
 centroid = (sum + 2*centroid_skin + centroid_semicircle + centroid_spar)/Area   #Final z-coordinate of the centroid with respect to the leading edge
 
 
-plt.scatter(x = centroid, y=0)                     #plotting the centroid location
-
-plt.show()
-
+#plt.scatter(x = centroid, y=0)                     #plotting the centroid location
+#
+#plt.show()
+#
 
 
 #Adjusted z-coordinates of the cross-section with respect to the centroid not the leading edge
