@@ -30,11 +30,11 @@ A = np.array([[a11, a12, a13],
               [a21, a22, a23],
               [a31, a32, a33]])
 
-"""
+
 A = np.array([ [(1/(2*A_1))*(pi*h/(t_sk * 2)+h/t_sp),-h/(2*A_1*t_sp) , -1], 
                 [-h/(2*A_2*t_sp), (1/2*A_2)*((2*l_skin/t_sk )+h/t_sp), -1], 
                 [2*A_1, 2*A_2, 0] ]) 
-"""
+
 
 x = np.linalg.solve(A,b)
 

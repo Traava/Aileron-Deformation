@@ -4,7 +4,6 @@ import scipy as sp
 from variables import *
 import Aero_load as al
 import MoI
-import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
@@ -13,17 +12,17 @@ sns.set()
 
 Izz = MoI.Izz_Aileron
 Iyy = MoI.Iyy_Aileron
-J = 7.748548555816593e-06
+J =7.748548555816593e-06     #0.000175317141188
 theta = theta_max
-zh = zhat
+zh = 0.08553893540215983    #zhat
 hh = zh- h/2
 
 la = al.x_coor[-1]
-
 mult = 1
-
 A = np.zeros((9,9))
 
+print(MoI.Izz_Aileron)
+print(MoI.Iyy_Aileron)
 "Unit 3.1"
 #Macaulay step function
 def Mac(x):
@@ -69,7 +68,13 @@ def Q4(x):
         for i in range(len(x)):
             integ[i] = al.integration(4, x[i], mult*al.q_tilde, al.x_coor)
         return integ
-
+    
+#Q_test = []
+#for x in al.x_coor:
+#    Q_test.append(Q1(x))
+#    
+#plt.plot(al.x_coor, Q_test, al.x_coor, al.q_tilde)
+#plt.show()
     
 
 #Two-time integral of torque distribution over x"
@@ -88,7 +93,8 @@ def aero_Mx(x):
 def aero_Mz(x):
     return al.integration(1,x, mult*al.q_tilde*(al.x_coor-np.ones(len(al.x_coor))*xaI), al.x_coor)   #Marek edit: the arm was wrong here
 
-#########################Form 1####################### Form 1: v(x) +hh*phi(x)
+#########################Form 1####################### Form 1: v(x) +hh*phi(x)  
+print("Hello this is me:", al.integration(1,la,mult*al.q_tilde*(al.x_coor-np.ones(len(al.x_coor))*xaI), al.x_coor))
 
 "Unit 3.4"
 #coeff. for Ry1, Ry2, Ry3:
@@ -157,31 +163,33 @@ Xdef = ['Ry1','Ry2','Ry3','Rz1','Rz2','Rz3','RaI','C1','C2','C3','C4','C5']
 
 a1 = [1,1,1,0,0,0,sin(theta), 0,0,0,0,0]
 a2 = [0,0,0,1,1,1,cos(theta), 0,0,0,0,0] 
-a3 = [0,0,0,0,0,0,h*(sin(theta)-cos(theta))/2,0,0,0,0,0]     #could try torque
-a4 = [0,0,0,0, x1-x2, x1-x3, (x1-xaI)*cos(theta), 0 , 0,0,0,0]
-a5 = [-(xaI -x1), x2-xaI, x3-xaI, 0,0,0,0,0,0,0,0,0]         #Marek Edit:
-a6 = [F1_Ry123(x1,x1), F1_Ry123(x1,x2), F1_Ry123(x1, x3), 0,0,0,F1_RaIaII(x1, xaI), x1, 1,0,0,hh]
-a7 = [0,0,0, F2_Rz123(x1,x1), F2_Rz123(x1,x2), F2_Rz123(x1,x3), F2_RaIaII(x1, xaI), 0, 0, x1, 1, 0]
-a8 = [F1_Ry123(x2,x1), F1_Ry123(x2,x2), F1_Ry123(x2, x3), 0,0,0,F1_RaIaII(x2, xaI), x2, 1,0,0,hh]
-a9 = [0,0,0, F2_Rz123(x2,x1), F2_Rz123(x2,x2), F2_Rz123(x2,x3), F2_RaIaII(x2, xaI), 0, 0, x2, 1, 0]
-a10 = [F1_Ry123(x3,x1), F1_Ry123(x3,x2), F1_Ry123(x3, x3), 0,0,0,F1_RaIaII(x3, xaI), x3, 1,0,0,hh]
-a11 = [0,0,0, F2_Rz123(x3,x1), F2_Rz123(x3,x2), F2_Rz123(x3,x3), F2_RaIaII(x3, xaI), 0, 0, x3, 1, 0]
-a12 = [F3A_Ry123(xaI, x1)+F3B_Ry123(xaI, x1), F3A_Ry123(xaI,x2)+F3B_Ry123(xaI,x2), F3A_Ry123(xaI, x3)+F3B_Ry123(xaI, x3), 
-       F3B_Rz123(xaI, x1), F3B_Rz123(xaI, x2), F3B_Rz123(xaI, x3), F3A_RaIaII(xaI,xaI)+F3B_RaIaII(xaI,xaI), xaI*sin(theta), sin(theta), xaI*cos(theta),cos(theta),zh*sin(theta)-h/2*cos(theta)]
+a3 = [hh,hh,hh,0,0,0,zh*sin(theta)-h*cos(theta)/2,0,0,0,0,0]     #could try torque
+a4 = [0,0,0,x1-la, x2-la, x3-la, (xaI-la)*cos(theta), 0 , 0,0,0,0]
+a5 = [x1-la, x2-la, x3-la, 0,0,0,(xaI-la)*sin(theta),0,0,0,0,0]         #Marek Edit:
+a6 = [0, 0, 0, 0,0,0,0, x1, 1,0,0,hh]
+a7 = [0,0,0, 0, 0, 0, 0, 0, 0, x1, 1, 0]
+a8 = [F1_Ry123(x2,x1), 0, 0, 0,0,0,F1_RaIaII(x2, xaI), x2, 1,0,0,hh]
+a9 = [0,0,0, F2_Rz123(x2,x1), 0, 0, F2_RaIaII(x2, xaI), 0, 0, x2, 1, 0]
+a10 = [F1_Ry123(x3,x1), F1_Ry123(x3,x2), 0, 0,0,0,F1_RaIaII(x3, xaI), x3, 1,0,0,hh]
+a11 = [0,0,0, F2_Rz123(x3,x1), F2_Rz123(x3,x2), 0, F2_RaIaII(x3, xaI), 0, 0, x3, 1, 0]
+a12 = [F3A_Ry123(xaI, x1)+F3B_Ry123(xaI, x1), 0, 0,
+       F3B_Rz123(xaI, x1), 0, 0, 0, xaI*sin(theta), sin(theta), xaI*cos(theta),cos(theta),zh*sin(theta)-h/2*cos(theta)]
 
  
 b1 = [-P*sin(theta) - Q1(la)]
 b2 = [-P*cos(theta)]
-b3 = [P*h/2*(cos(theta)-sin(theta)) - aero_Mx(la) ]      #Marek edit: replaced + by -
-b4 = [P*cos(theta)*(xaII-x1)]
-b5 = [-P*sin(theta)*(xaII-xaI) - aero_Mz(la)]
-b6 = [-d1*cos(theta) - F1_const(x1) - F1_RaIaII(x1, xaII)*P ]
+b3 = [-P*(sin(theta)*zh-cos(theta)*h/2) - al.integration(1,la,al.qT_tilde,al.x_coor) ]      #Marek edit: replaced + by -
+b4 = [P*cos(theta)*(la-xaII)]
+b5 = [P*sin(theta)*(la-xaII) + al.integration(2,la,mult*al.q_tilde,al.x_coor)]
+b6 = [-d1*cos(theta) - F1_const(x1) - 0]
 b7 = [d1*sin(theta) - F2_const(x1)]
-b8 = [- F1_const(x2) - F1_RaIaII(x2, xaII)*P]
-b9 = [- F2_const(x2)]
+b8 = [- F1_const(x2) - 0]
+b9 = [-0]
 b10 = [-d3*cos(theta) - F1_const(x3)- F1_RaIaII(x3, xaII)*P]
 b11 = [d3*sin(theta) - F2_const(x3)]
-b12 = [-F3A_const(xaI) - F3B_const(xaI)-F3P_const(xaI,xaII)]    #Marek Edit, added F3P
+b12 = [-F3A_const(xaI) - F3B_const(xaI)-0]    #Marek Edit, added F3P
+
+print("Hellooo", F3P_const(xaI,xaII))
 
 alst = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12]
 
@@ -252,7 +260,35 @@ def phi(x):
               + RaI*Mac(x-xaI)*(zh*sin(theta) - h/2*cos(theta)) 
               + P*Mac(x-xaII)*(zh*sin(theta) - h/2*cos(theta)) 
               + tao2(x) )  +  C5
+ 
+import matplotlib.pyplot as plt
 
+xx = np.linspace(0,la, 100)
+plt.plot(xx,v(xx))
+plt.show()
+
+plt.plot(xx,w(xx))
+plt.show()
+
+plt.plot(xx,phi(xx))
+plt.show()
+
+
+
+
+dY = v(xx) + hh*phi(xx)
+
+dYe = dY*cos(theta) - w(xx)*sin(theta)
+dZe = w(xx)*cos(theta)+dY*sin(theta)
+
+
+
+hinge = [x1,x2,x3]
+aIaII = [xaI, xaII]
+bcY = [d1,0,d3]
+bcZ = [0,0,0]
+
+#
 def powzero(x):
     if x ==0:
         return 0
@@ -283,49 +319,21 @@ def Vz(x):
         V[i] = -Rz1*powzero(Mac(x[i]-x1)) - Rz2*powzero(Mac(x[i]-x2)) - Rz3*powzero(Mac(x[i]-x3)) - RaI*cos(theta)*powzero(Mac(x[i]-xaI)) - P*cos(theta)*powzero(Mac(x[i]-xaII))
     return V
 
-def T(x):
-    T = np.zeros(np.shape(x))
-    for i in range(len(x)):
-        T[i] = Ry1*hh*powzero(Mac(x[i]-x1)) + Ry2*hh*powzero(Mac(x[i]-x2))+Ry3*hh*powzero(Mac(x[i]-x3))+RaI*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaI))+ P*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaII))+ al.integration(1,x[i],al.qT_tilde,al.x_coor)
-    return T
 
-xx = np.linspace(0,la, 100)
 
-plt.plot(xx,T(xx))
+plt.plot(xx,Vz(xx))
+#
+plt.plot(xx,Vy(xx))
 plt.show()
+#plt.plot(xx,phi(xx))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# dY = v(xx) + hh*phi(xx)
-#
-# dYe = dY*cos(theta) - w(xx)*sin(theta)
-# dZe = w(xx)*cos(theta)+dY*sin(theta)
-#
-#
-#
-# hinge = [x1,x2,x3]
-# aIaII = [xaI, xaII]
-# bcY = [d1,0,d3]
-# bcZ = [0,0,0]
+plt.plot(xx,dZe)
+plt.scatter(hinge, bcZ)
+plt.plot(xx,-dYe)
+plt.scatter(hinge, bcY)
+plt.scatter(aIaII,[0,0])
+plt.show()
 
 
     
