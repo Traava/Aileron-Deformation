@@ -253,6 +253,8 @@ def phi(x):
               + P*Mac(x-xaII)*(zh*sin(theta) - h/2*cos(theta)) 
               + tao2(x) )  +  C5
 
+
+
 def powzero(x):
     if x ==0:
         return 0
@@ -293,6 +295,24 @@ xx = np.linspace(0,la, 100)
 
 plt.plot(xx,T(xx))
 plt.show()
+
+plt.plot(xx,Vz(xx))
+plt.show()
+
+plt.plot(xx,Vy(xx))
+plt.show()
+plt.plot(xx,Mz(xx))
+plt.show()
+plt.plot(xx,My(xx))
+plt.show()
+plt.plot(xx,v(xx))
+plt.show()
+plt.plot(xx,w(xx))
+plt.show()
+
+plt.plot(xx,phi(xx))
+plt.show()
+
 
 
 
