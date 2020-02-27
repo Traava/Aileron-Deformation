@@ -339,4 +339,4 @@ def integration(n,x,func,coor):
 #         output += dA
 #     return output
 
-
+print(qT_tilde)
