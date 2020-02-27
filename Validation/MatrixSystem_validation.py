@@ -1,29 +1,48 @@
 import numpy as np
 from numpy import sin, cos
 import scipy as sp
-from variables import *
-import Aero_load as al
-import MoI
+from variables_validation import *
+from Aero_load_validation import integration
+import MoI_validation
 import matplotlib.pyplot as plt
-from Torsional_Stiffness import J
-import seaborn as sns
-sns.set()
+from Torsional_Stiffness_validation import J
 
 
-#variables:
+zh = 0.0837 #Not correct, 
 
-Izz = MoI.Izz_Aileron
-Iyy = MoI.Iyy_Aileron
-#J = 7.748548555816593e-06
+#aero-Load:
+
+x_coor = np.linspace(0, la, 100)
+CoPs = np.ones(len(x_coor))*0.25*Ca
+q_tilde = np.ones(np.shape(x_coor)) * 5.54e3
+qT_tilde = q_tilde*(zh - CoPs)
+##------------------
+
+Izz = MoI_validation.Izz_Aileron
+Iyy = MoI_validation.Iyy_Aileron
+
 theta = theta_max
-zh = zhat
 hh = zh- h/2
 
-la = al.x_coor[-1]
-
+##----Varying load cases:
 mult = 1
+bending = True
+jammed = True
+
+if bending == False:
+    d1, d3 = 0
+if jammed == False:
+    P = 0
+    
+
+
+#-----------------
+
 
 A = np.zeros((9,9))
+###----------------------------
+
+
 
 "Unit 3.1"
 #Macaulay step function
@@ -54,21 +73,21 @@ def MacTest():
 #Integral of aerodynamic load distribution over x
 def Q1(x):
     if np.ndim(x) == 0:
-        return al.integration(1, x, mult*al.q_tilde, al.x_coor)
+        return integration(1, x, mult*q_tilde, x_coor)
     elif np.ndim(x) == 1:
         integ = np.zeros(np.shape(x))
         for i in x:
-            integ[i] = al.integration(1, i, mult*al.q_tilde, al.x_coor)
+            integ[i] = integration(1, i, mult*q_tilde, x_coor)
         return integ
 
 #four-time integral of aerodynamic load distribution over x
 def Q4(x):
     if np.ndim(x) == 0:
-        return al.integration(4, x, mult*al.q_tilde, al.x_coor)
+        return integration(4, x, mult*q_tilde, x_coor)
     elif np.ndim(x) == 1:
         integ = np.zeros(np.shape(x))
         for i in range(len(x)):
-            integ[i] = al.integration(4, x[i], mult*al.q_tilde, al.x_coor)
+            integ[i] = integration(4, x[i], mult*q_tilde, x_coor)
         return integ
 
     
@@ -76,18 +95,18 @@ def Q4(x):
 #Two-time integral of torque distribution over x"
 def tao2(x):
     if np.ndim(x) == 0:
-        return al.integration(2, x, mult*al.qT_tilde, al.x_coor)
+        return integration(2, x, mult*qT_tilde, x_coor)
     elif np.ndim(x) == 1:
         integ = np.zeros(np.shape(x))
         for i in range(len(x)):
-            integ[i] = al.integration(2, x[i], mult*al.qT_tilde, al.x_coor)
+            integ[i] = integration(2, x[i], mult*qT_tilde, x_coor)
         return integ
     
 "Unit 3.3"
 def aero_Mx(x):
-    return al.integration(1,x,-(al.CoPs-np.ones(len(al.CoPs))*h/2)*mult*al.q_tilde, al.x_coor)       # Marek edit: added minus
+    return integration(1,x,-(CoPs-np.ones(len(CoPs))*h/2)*mult*q_tilde, x_coor)       # Marek edit: added minus
 def aero_Mz(x):
-    return al.integration(1,x, mult*al.q_tilde*(al.x_coor-np.ones(len(al.x_coor))*xaI), al.x_coor)   #Marek edit: the arm was wrong here
+    return integration(1,x, mult*q_tilde*(x_coor-np.ones(len(x_coor))*xaI), x_coor)   #Marek edit: the arm was wrong here
 
 #########################Form 1####################### Form 1: v(x) +hh*phi(x)
 
@@ -152,6 +171,7 @@ def F3P_const(x,xn):
 
 ##################################################################
 
+
 "Unit 3.5"
 #IMPLENTING THE MATRIX
 Xdef = ['Ry1','Ry2','Ry3','Rz1','Rz2','Rz3','RaI','C1','C2','C3','C4','C5']  
@@ -190,6 +210,7 @@ blst = [b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12]
 
 A = np.zeros((12,12))
 B = np.zeros((12,1))
+
 
 for i in range(len(alst)):
     assert len(alst[i]) == 12
@@ -262,13 +283,13 @@ def powzero(x):
 def Mz(x):
     M = np.zeros(np.shape(x))
     for i in range(len(x)):
-        M[i] = -Ry1*Mac(x[i]-x1) - Ry2*Mac(x[i]-x2) - Ry3*Mac(x[i]-x3) - RaI*sin(theta)*Mac(x[i]-xaI) - P*sin(theta)*Mac(x[i]-xaII) - al.integration(2,x[i],mult*al.q_tilde,al.x_coor)
+        M[i] = -Ry1*Mac(x[i]-x1) - Ry2*Mac(x[i]-x2) - Ry3*Mac(x[i]-x3) - RaI*sin(theta)*Mac(x[i]-xaI) - P*sin(theta)*Mac(x[i]-xaII) - integration(2,x[i],mult*q_tilde,x_coor)
     return M
 
 def Vy(x):
     V = np.zeros(np.shape(x))
     for i in range(len(x)):
-        V[i] = -Ry1*powzero(Mac(x[i]-x1)) - Ry2*powzero(Mac(x[i]-x2)) - Ry3*powzero(Mac(x[i]-x3)) - RaI*sin(theta)*powzero(Mac(x[i]-xaI)) - P*sin(theta)*powzero(Mac(x[i]-xaII)) - al.integration(1,x[i],mult*al.q_tilde,al.x_coor)
+        V[i] = -Ry1*powzero(Mac(x[i]-x1)) - Ry2*powzero(Mac(x[i]-x2)) - Ry3*powzero(Mac(x[i]-x3)) - RaI*sin(theta)*powzero(Mac(x[i]-xaI)) - P*sin(theta)*powzero(Mac(x[i]-xaII)) - integration(1,x[i],mult*q_tilde,x_coor)
     return V
 
 
@@ -287,46 +308,37 @@ def Vz(x):
 def T(x):
     T = np.zeros(np.shape(x))
     for i in range(len(x)):
-        T[i] = Ry1*hh*powzero(Mac(x[i]-x1)) + Ry2*hh*powzero(Mac(x[i]-x2))+Ry3*hh*powzero(Mac(x[i]-x3))+RaI*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaI))+ P*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaII))+ al.integration(1,x[i],al.qT_tilde,al.x_coor)
+        T[i] = Ry1*hh*powzero(Mac(x[i]-x1)) + Ry2*hh*powzero(Mac(x[i]-x2))+Ry3*hh*powzero(Mac(x[i]-x3))+RaI*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaI))+ P*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaII))+ integration(1,x[i],qT_tilde,x_coor)
     return T
 
-xx = np.linspace(0,la, 100)
-
-plt.plot(xx,T(xx))
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# dY = v(xx) + hh*phi(xx)
+#xx = np.linspace(0,la, 100)
 #
-# dYe = dY*cos(theta) - w(xx)*sin(theta)
-# dZe = w(xx)*cos(theta)+dY*sin(theta)
+#plt.plot(xx,T(xx))
+
+
+dY = v(xx) + hh*phi(xx)
+
+dYe = dY*cos(theta) - w(xx)*sin(theta)
+dZe = w(xx)*cos(theta)+dY*sin(theta)
 #
 #
 #
-# hinge = [x1,x2,x3]
+hinge = [x1,x2,x3]
 # aIaII = [xaI, xaII]
-# bcY = [d1,0,d3]
-# bcZ = [0,0,0]
-
-
+bcY = [d1,0,d3]
+bcZ = [0,0,0]
     
+plt.plot(xx, -dYe)
+plt.plot(xx, dZe)
+plt.scatter(hinge,bcY)
+plt.scatter(hinge,bcZ)
+plt.show()
+    
+
+
+
+
+
+
+
+

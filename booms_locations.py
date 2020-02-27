@@ -71,7 +71,7 @@ y22 = -y2                                   #lower skin
 #Centroid Calculations
 sum = 0 
 
-for i in range(1,12):             #multiplying each boom by it's z-coordinate
+for i in range(1,n_st+1):             #multiplying each boom by it's z-coordinate
     j = eval('z_b'+ str(i))
     sum = sum + j*boom_area 
 
@@ -79,7 +79,7 @@ centroid_semicircle = ((h/2) - (h/pi))*(pi*0.5*h*t_sk)       #centroid of semi-c
 centroid_skin       = (0.5*Ca + 0.25*h)*(t_sk*l_skin)        #centroid of skin multiplied by its area
 centroid_spar       = (0.5*h)*(h*t_sp)                       #centroid of the spar part multiplied by its area
 
-Area = boom_area*11 + (h*t_sp) + (t_sk*l_skin*2) + (pi*0.5*h*t_sk)      #total area of the cross-section
+Area = boom_area*n_st + (h*t_sp) + (t_sk*l_skin*2) + (pi*0.5*h*t_sk)      #total area of the cross-section
 
 centroid = (sum + 2*centroid_skin + centroid_semicircle + centroid_spar)/Area   #Final z-coordinate of the centroid with respect to the leading edge
 
@@ -94,7 +94,7 @@ centroid = (sum + 2*centroid_skin + centroid_semicircle + centroid_spar)/Area   
 #these coordinates will be used in calculating the contribution of booms in the shear flow
 z_coordinates_adjusted = np.array([])
 
-for i in range(1,12):
+for i in range(1,n_st+1):
     j = eval('z_b'+str(i))
     z_coor = j - centroid
     z_coordinates_adjusted = np.append(z_coordinates_adjusted, z_coor)
