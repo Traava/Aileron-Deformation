@@ -14,10 +14,11 @@ from Shear_center import zsc
 Izz   = MoI.Izz_Aileron
 Iyy   = MoI.Iyy_Aileron
 theta = theta_max
-zh    = zsc
+J = 7.748548555816593e-06
+zh    = 0.08553893540215983
 hh    = zh- h/2
 la    = al.x_coor[-1]
-mult  = 1
+mult  = 0
 A     = np.zeros((9,9))
 
 "Unit 3.1"
@@ -284,25 +285,38 @@ phi_num = phi(xx)
 
 
 
+
+
+
 """Verification"""
 
-
+"Unit 3.1"
 def MacTest():
     # array of test values
     testVal = np.arange(-8, 12, 0.97)
+    out = np.zeros(len(testVal))
 
     # testing Macaulay of scalars
-    for val in testVal:
-        print('[', val, '] = ', Mac(val))
+    for val in range(len(testVal)):
+        print('[', testVal[val], '] = ', Mac(testVal[val]))
+        out[val] = testVal[val]
+
     print()
     # testing Macaulay of array
     print(testVal)
     print(Mac(testVal))
+    return testVal, out
+
+testx,testy = MacTest()
+plt.plot(testy,testx)
+plt.xlabel("x[-]").set_size(14)
+plt.ylabel("$Mac(x)$").set_size(14)
+plt.grid()
+plt.show()
 
 
 
-
-
+"Unit 3.4"
 ### matrix equations verification
 sumFy = Ry1 + Ry2 + Ry3 + RaI*sin(theta) + P*sin(theta) + Q1(la)
 sumFz = Rz1 + Rz2 + Rz3 + RaI*cos(theta) + P*cos(theta)
@@ -325,23 +339,41 @@ BC7 = F3A_Ry123(xaI, x1)*Ry1 + F3B_Ry123(xaI,x1)*Ry1 + F3B_Rz123(xaI,x1)*Rz1 + F
       C1*xaI*sin(theta) + C2*sin(theta) + C3*xaI*cos(theta) + C4*cos(theta)+ (zh*sin(theta)-h/2*cos(theta))*C5
 ###
 
+"SYSTEM TESTING"
+xx = np.linspace(0,la,100)
+dY = v(xx) + hh*phi(xx)
+dYe = dY*cos(theta) - w(xx)*sin(theta)
+dZe = w(xx)*cos(theta)+dY*sin(theta)
+hinge = [x1,x2,x3]
+bcY = [-d1,0,-d3]
+bcZ = [0,0,0]
+
+plt.plot(xx,dYe,label="$v_b(x)$[m]")
+plt.plot(xx,dZe,label = "$w_b(x)$[m]")
+plt.scatter(hinge,bcY)
+plt.scatter(hinge,bcZ)
+plt.xlabel("x[m]").set_size(14)
+plt.ylabel("Deflection [m]").set_size(14)
+plt.grid()
+plt.legend()
+plt.show()
 
 
+offset = 0.05
+plt.figure()
 
+plt.subplot(121)
+plt.plot(xx,Sz_num/1000,color = 'black')
+plt.xlim(xmin = 0-offset, xmax = la+offset)
+plt.xlabel("x [m]").set_size(14)
+plt.ylabel("$S_z$ [kN]").set_size(14)
+plt.grid()
 
+plt.subplot(122)
+plt.plot(xx,Sy_num/1000,color = 'black')
+plt.xlim(xmin = 0-offset, xmax = la+offset)
+plt.xlabel("x [m]").set_size(14)
+plt.ylabel("$S_y$ [kN]").set_size(14)
+plt.grid()
 
-
-# dY = v(xx) + hh*phi(xx)
-#
-# dYe = dY*cos(theta) - w(xx)*sin(theta)
-# dZe = w(xx)*cos(theta)+dY*sin(theta)
-#
-#
-#
-# hinge = [x1,x2,x3]
-# aIaII = [xaI, xaII]
-# bcY = [d1,0,d3]
-# bcZ = [0,0,0]
-
-
-    
+plt.show()
