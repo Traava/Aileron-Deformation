@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 from scipy.spatial import distance
-#import MatrixSystem_validation as ms
 
 ###-Parsing node locations and elements
 node = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 9, skip_footer = 14594-6598)
@@ -40,7 +39,6 @@ rawStress = np.array(rawStress)
 rawDef = np.array(rawDef)
 
 
-###################################################
 ###----organising data into dictionaries-----
 
 stressdata = []
@@ -108,7 +106,6 @@ def deflections(def_data):
 
     
 def maxSectionStress(sections, stress_data ):
-    #sections = 100
     sec_bounds, step = np.linspace(0, 2661, sections+1, retstep = True)
     elem_sections = [{} for _ in range(sections)]
     maxstr_sections = []
@@ -136,31 +133,33 @@ def maxSectionStress(sections, stress_data ):
     for sec in elem_sections:
         stress = []
         for el in sec:
-            stress.append(stress_data.get(el, 0))
+            stress.append(stress_data.get(el, int(0)))
         maxstr = max(abs(np.array(stress)))
         maxstr_sections.append(maxstr)
         
     sec_mid = [sec_bounds[i]+step/2 for i in range(sections)]
     
-#    for i in range(len(maxstr_sections)):
-#        if maxstr_sections[i] == 0:
-#            maxstr_sections.pop(i)
-#            sec_mid.pop(i)
 
     return sec_mid, maxstr_sections
 
 
 
 
-cases = ['von Mises, Bending (reg. 1)','Shear, Bending (reg. 1)', 'von Mises, Bending (reg. 2)','Shear, Bending (reg. 2)', 'Von Mises, Jam-Bent (reg. 1)','Shear, Jam-Bent (reg. 1)','Von Mises, Jam-Bent (reg. 2)','Shear, Jam-Bent (reg. 2)', 'Von Mises, Jam-Straight (reg. 1)','Shear, Jam-Straight (reg. 1)', 'Von Mises, Jam-Straight (reg. 2)','Shear, Jam-Straight (reg. 2)']                                                 
+cases = ['Von Mises, Bending (reg. 1)','Shear, Bending (reg. 1)', 'Von Mises, Bending (reg. 2)','Shear, Bending (reg. 2)', 'Von Mises, Jam-Bent (reg. 1)','Shear, Jam-Bent (reg. 1)','Von Mises, Jam-Bent (reg. 2)','Shear, Jam-Bent (reg. 2)', 'Von Mises, Jam-Straight (reg. 1)','Shear, Jam-Straight (reg. 1)', 'Von Mises, Jam-Straight (reg. 2)','Shear, Jam-Straight (reg. 2)']                                                 
 #
-#for i in range(len(stressdata)):
-#    sec_mid, maxstr_sections = maxSectionStress(100, stressdata[i])
-#    plt.plot(sec_mid, maxstr_sections, label = cases[i])    
-#plt.legend()
-#plt.show()
+plt.figure()
+for i in range(0,len(stressdata),4):
+    print(i)
+    sec_mid, maxstr_sections = maxSectionStress(100, stressdata[i])
+    plt.plot(sec_mid, maxstr_sections, label = cases[i])   
+plt.title('Maximum stress of validation model at sections along the airfoil', size = 20)
+plt.xlabel('Spanwise position [m]', size = 16)
+plt.ylabel('Stress [GPa]', size = 16)
+plt.legend()
+plt.grid(b=True, which='major', color='black', linestyle='-')
+plt.show()
 
-##----Parsing txt files of our deflection results -----
+#----Parsing txt files of our deflection results -----
 deflect = [[] for _ in range(6)]
 
 xx = np.linspace(0,2.661, 100)
@@ -196,7 +195,7 @@ for i in range(len(defdata)):
 
 
 
-    j+=1##z:
+    j+=1
     plt.subplot(int('32'+str(i+j+1)))
     plt.scatter(xpos, zdef, label = 'Validation model', marker ='+', color='#ff7f0e')
     plt.plot(xx, deflect[j+i], label = 'Numerical model')
@@ -205,9 +204,7 @@ for i in range(len(defdata)):
         plt.xlabel("Spanwise position [m]").set_size(14)
     plt.ylabel("w(x) [m]").set_size(14)
 
-#    if j+i %2 == 1:
-#
-#        plt.ylabel("Deflection [m]").set_size(14)
+
     plt.title(Titles[j+i], size = 20)
     plt.legend()
     plt.grid(b=True, which='major', color='black', linestyle='-')
