@@ -110,18 +110,6 @@ def Bending(n,n_sp, m):
     z_coord = np.hstack((z_coord,z_coord_sp))
     #Stress = np.hstack((Stress[Max_loc],Stress_sp[Max_loc]))
     
-    fig1 = plt.figure()
-    ax1 = plt.axes()
-    ax1.invert_yaxis()
-    img1 = plt.scatter(z_coord, y_coord, c = Stress, cmap ='RdYlGn_r')
-    #img2 = plt.scatter(z_coord_sp, y_coord_sp, c = Stress_sp[20], cmap ='RdYlGn_r') 
-    
-    
-    cbar1 = fig1.colorbar(img1)
-    cbar1.set_label(r'[$\frac{N}{m^2}$]')
-    ax1.set_title("Direct Stress Distribution")
-    ax1.set_xlabel('z [m]')
-    ax1.set_ylabel('y [m]')
 
     return Stress, Stress_sp, z_coord, y_coord
 
