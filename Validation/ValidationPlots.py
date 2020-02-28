@@ -43,16 +43,16 @@ rawDef = np.array(rawDef)
 ###################################################
 ###----organising data into dictionaries-----
 
-#stressdata = []
-#
-#for j in range(6):
-#    elem_vm_dict = {}
-#    elem_s_dict = {}
-#    for i in rawStress[j]:
-#        elem_vm_dict[float(i[0])] = sum([float(i[2]),float(i[3])])/2
-#        elem_s_dict[float(i[0])] = sum([float(i[4]),float(i[5])])/2
-#    stressdata.append(elem_vm_dict)
-#    stressdata.append(elem_s_dict)
+stressdata = []
+
+for j in range(6):
+    elem_vm_dict = {}
+    elem_s_dict = {}
+    for i in rawStress[j]:
+        elem_vm_dict[float(i[0])] = sum([float(i[2]),float(i[3])])/2
+        elem_s_dict[float(i[0])] = sum([float(i[4]),float(i[5])])/2
+    stressdata.append(elem_vm_dict)
+    stressdata.append(elem_s_dict)
 #    
 defdata = []
 
@@ -109,7 +109,7 @@ def deflections(def_data):
     
 def maxSectionStress(sections, stress_data ):
     #sections = 100
-    sec_bounds = np.linspace(0, 2661, sections+1)
+    sec_bounds, step = np.linspace(0, 2661, sections+1, retstep = True)
     elem_sections = [{} for _ in range(sections)]
     maxstr_sections = []
     
@@ -140,22 +140,27 @@ def maxSectionStress(sections, stress_data ):
         maxstr = max(abs(np.array(stress)))
         maxstr_sections.append(maxstr)
         
-    sec_mid = [sec_bounds[i]+sec_bounds[i+1]/2 for i in range(sections)]
+    sec_mid = [sec_bounds[i]+step/2 for i in range(sections)]
     
+#    for i in range(len(maxstr_sections)):
+#        if maxstr_sections[i] == 0:
+#            maxstr_sections.pop(i)
+#            sec_mid.pop(i)
+
     return sec_mid, maxstr_sections
 
 
 
 
 cases = ['von Mises, Bending (reg. 1)','Shear, Bending (reg. 1)', 'von Mises, Bending (reg. 2)','Shear, Bending (reg. 2)', 'Von Mises, Jam-Bent (reg. 1)','Shear, Jam-Bent (reg. 1)','Von Mises, Jam-Bent (reg. 2)','Shear, Jam-Bent (reg. 2)', 'Von Mises, Jam-Straight (reg. 1)','Shear, Jam-Straight (reg. 1)', 'Von Mises, Jam-Straight (reg. 2)','Shear, Jam-Straight (reg. 2)']                                                 
-
+#
 #for i in range(len(stressdata)):
 #    sec_mid, maxstr_sections = maxSectionStress(100, stressdata[i])
 #    plt.plot(sec_mid, maxstr_sections, label = cases[i])    
 #plt.legend()
 #plt.show()
 
-#----Parsing txt files of our deflection results -----
+##----Parsing txt files of our deflection results -----
 deflect = [[] for _ in range(6)]
 
 xx = np.linspace(0,2.661, 100)
@@ -173,6 +178,7 @@ for i in range(3):
 deflection_labels  = []
 plt.figure()
 j = 0
+Titles = ['Y-deflection for bending case','Z-deflection for bending case', 'Y-deflection for jam-bent case','Z-deflection for jam-bent case','Y-deflection for jam-straight case','Z-deflection for jam-straight case' ]
 for i in range(len(defdata)):
     
     xpos, ydef, zdef = deflections(defdata[i])
@@ -182,10 +188,9 @@ for i in range(len(defdata)):
 
     if j+i>3:
         plt.xlabel("Spanwise position [m]").set_size(14)
-    plt.ylabel("Deflection [m]").set_size(14)
-
-    if i == 0:
-        plt.title('Y-deflections', size = 20)
+    plt.ylabel("v(x) [m]").set_size(14)
+    
+    plt.title(Titles[j+i], size = 20)
     plt.legend()
     plt.grid(b=True, which='major', color='black', linestyle='-')
 
@@ -198,11 +203,12 @@ for i in range(len(defdata)):
     if j+i>3:
 
         plt.xlabel("Spanwise position [m]").set_size(14)
+    plt.ylabel("w(x) [m]").set_size(14)
+
 #    if j+i %2 == 1:
 #
 #        plt.ylabel("Deflection [m]").set_size(14)
-    if i == 0:
-        plt.title('Z-deflections', size = 20)
+    plt.title(Titles[j+i], size = 20)
     plt.legend()
     plt.grid(b=True, which='major', color='black', linestyle='-')
 
