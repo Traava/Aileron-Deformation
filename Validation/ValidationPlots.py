@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 from scipy.spatial import distance
-
+#import MatrixSystem_validation as ms
 
 ###-Parsing node locations and elements
 node = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 9, skip_footer = 14594-6598)
@@ -34,7 +34,7 @@ for line in f:
             while len(rawDef[node_label_count//2]) < sizes2:
                 rawDef[node_label_count//2].append(np.array(next(f).split()))
                 
-        
+
         
 rawStress = np.array(rawStress)
 rawDef = np.array(rawDef)
@@ -92,8 +92,9 @@ def deflections(def_data):
         ydef.append(def_data[nod][2])
         zdef.append(def_data[nod][3])
         
-    ydef = np.array(ydef)
-    zdef = np.array(zdef)
+    xpos = np.array(xpos)/1000
+    ydef = -np.array(ydef)/1000# converting to meters and swapping signs to fit with our coord system
+    zdef = -np.array(zdef)/1000
     
         
     for nod in hinge_nodes:
@@ -154,10 +155,46 @@ cases = ['von Mises, Bending (reg. 1)','Shear, Bending (reg. 1)', 'von Mises, Be
 #plt.legend()
 #plt.show()
 
-for i in range(1):
+#----Parsing txt files of our deflection results -----
+deflect = [[] for _ in range(6)]
+
+xx = np.linspace(0,2.661, 100)
+
+
+for i in range(3):
+    f= open('Case_'+str(i+1)+'.txt', 'r')
+    j =1
+    for line in f:
+        deflect[2*i].append(float(line.split()[1]))
+        deflect[2*i+1].append(float(line.split()[2]))
+
+
+        
+deflection_labels  = []
+plt.figure()
+j = 0
+for i in range(len(defdata)):
     xpos, ydef, zdef = deflections(defdata[i])
-    plt.scatter(xpos, ydef, label = 'y-deflection'+str(i+1))
-    plt.scatter(xpos, zdef, label = 'z-deflection'+str(i+1))
+    plt.subplot(int('32'+str(i+j+1)))
+    plt.scatter(xpos, ydef, label = 'Validation model', marker ='+', color='#ff7f0e')
+    plt.plot(xx, deflect[j+i], label = 'Numerical model')
+    plt.xlabel("Spanwise position [m]").set_size(14)
+    plt.ylabel("Y-deflection [m]").set_size(14)
+    plt.legend()
+    plt.grid()
+
+
+    j+=1##z:
+    plt.subplot(int('32'+str(i+j+1)))
+    plt.scatter(xpos, zdef, label = 'Validation model', marker ='+', color='#ff7f0e')
+    plt.plot(xx, deflect[j+i], label = 'Numerical model')
+    plt.xlabel("Spanwise position [m]").set_size(14)
+    plt.ylabel("Z-deflection [m]").set_size(14)
+
+    plt.legend()
+    plt.grid()
+
+
     
 plt.legend()
 plt.show()

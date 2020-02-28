@@ -27,11 +27,11 @@ hh = zh- h/2
 
 ##----Varying load cases:
 mult = 1
-bending = True
+bending = False
 jammed = True
 
 if bending == False:
-    d1, d3 = 0
+    d1, d3 = 0, 0
 if jammed == False:
     P = 0
     
@@ -318,26 +318,39 @@ xx = np.linspace(0,la, 100)
 
 
 dY = v(xx) + hh*phi(xx)
+dZ = w(xx)
 
-dYe = dY*cos(theta) - w(xx)*sin(theta)
-dZe = w(xx)*cos(theta)+dY*sin(theta)
-#
-#
-#
-hinge = [x1,x2,x3]
-# aIaII = [xaI, xaII]
-bcY = [d1,0,d3]
-bcZ = [0,0,0]
-    
-plt.plot(xx, -dYe)
-plt.plot(xx, dZe)
-plt.scatter(hinge,bcY)
-plt.scatter(hinge,bcZ)
+#dYe = dY*cos(theta) - w(xx)*sin(theta)
+#dZe = w(xx)*cos(theta)+dY*sin(theta)
+##
+##
+##
+#hinge = [x1,x2,x3]
+## aIaII = [xaI, xaII]
+#bcY = [d1,0,d3]
+#bcZ = [0,0,0]
+#    
+#plt.plot(xx, -dYe)
+#plt.plot(xx, dZe)
+#plt.scatter(hinge,bcY)
+#plt.scatter(hinge,bcZ)
+
+
+
+
+plt.plot(xx, dY)
+plt.plot(xx, dZ)
+
+
 plt.show()
     
 
 
-
+#-----Creating txt files with deflection results for each case
+#f = open('Case_3.txt', 'w')
+#for i in range(len(xx)):
+#    f.write(str(xx[i])+'\t'+str(dY[i])+'\t'+str(dZ[i])+'\n')
+#f.close()
 
 
 
