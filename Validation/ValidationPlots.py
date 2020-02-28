@@ -43,17 +43,17 @@ rawDef = np.array(rawDef)
 ###################################################
 ###----organising data into dictionaries-----
 
-stressdata = []
-
-for j in range(6):
-    elem_vm_dict = {}
-    elem_s_dict = {}
-    for i in rawStress[j]:
-        elem_vm_dict[int(i[0])] = sum([float(i[2]),float(i[3])])/2
-        elem_s_dict[int(i[0])] = sum([float(i[4]),float(i[5])])/2
-    stressdata.append(elem_vm_dict)
-    stressdata.append(elem_s_dict)
-    
+#stressdata = []
+#
+#for j in range(6):
+#    elem_vm_dict = {}
+#    elem_s_dict = {}
+#    for i in rawStress[j]:
+#        elem_vm_dict[float(i[0])] = sum([float(i[2]),float(i[3])])/2
+#        elem_s_dict[float(i[0])] = sum([float(i[4]),float(i[5])])/2
+#    stressdata.append(elem_vm_dict)
+#    stressdata.append(elem_s_dict)
+#    
 defdata = []
 
 for j in range(3):
@@ -168,33 +168,47 @@ for i in range(3):
         deflect[2*i].append(float(line.split()[1]))
         deflect[2*i+1].append(float(line.split()[2]))
 
-
+#-----Plotting deflection and comparing
         
 deflection_labels  = []
 plt.figure()
 j = 0
 for i in range(len(defdata)):
+    
     xpos, ydef, zdef = deflections(defdata[i])
     plt.subplot(int('32'+str(i+j+1)))
     plt.scatter(xpos, ydef, label = 'Validation model', marker ='+', color='#ff7f0e')
     plt.plot(xx, deflect[j+i], label = 'Numerical model')
-    plt.xlabel("Spanwise position [m]").set_size(14)
-    plt.ylabel("Y-deflection [m]").set_size(14)
+
+    if j+i>3:
+        plt.xlabel("Spanwise position [m]").set_size(14)
+    plt.ylabel("Deflection [m]").set_size(14)
+
+    if i == 0:
+        plt.title('Y-deflections', size = 20)
     plt.legend()
-    plt.grid()
+    plt.grid(b=True, which='major', color='black', linestyle='-')
+
 
 
     j+=1##z:
     plt.subplot(int('32'+str(i+j+1)))
     plt.scatter(xpos, zdef, label = 'Validation model', marker ='+', color='#ff7f0e')
     plt.plot(xx, deflect[j+i], label = 'Numerical model')
-    plt.xlabel("Spanwise position [m]").set_size(14)
-    plt.ylabel("Z-deflection [m]").set_size(14)
+    if j+i>3:
 
+        plt.xlabel("Spanwise position [m]").set_size(14)
+#    if j+i %2 == 1:
+#
+#        plt.ylabel("Deflection [m]").set_size(14)
+    if i == 0:
+        plt.title('Z-deflections', size = 20)
     plt.legend()
-    plt.grid()
+    plt.grid(b=True, which='major', color='black', linestyle='-')
+
 
 
     
-plt.legend()
 plt.show()
+
+
