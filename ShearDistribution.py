@@ -47,9 +47,9 @@ def VerticalShear(Sy):
     def function(x):
         return np.sin(x)
     
-    x1 = np.linspace(0,theta_separation,50)
+    x1 = np.linspace(0,theta_separation,63)
     qb11 = -(1/Izz_Aileron)*((-(integrate(function(x1),x1))*r**2*t_sk + 0.5*boom_area*y_b1)) +qb01
-    x2 = np.linspace(theta_separation,pi/2,50)
+    x2 = np.linspace(theta_separation,pi/2,15)
     qb12 = -(1/Izz_Aileron)*((-(integrate(function(x2),x2))*r**2*t_sk) + boom_area*(y_b2)) + qb11[-1]
     
     qb1 = np.hstack((qb11, qb12))
@@ -67,20 +67,20 @@ def VerticalShear(Sy):
         return -1 + x/l_sk
     
     separation_initial = 2*booms_separation-pi*r/2
-    x = np.linspace(0,separation_initial,50)
+    x = np.linspace(0,separation_initial,48)
     qb03 = qb1[-1] + qb2[-1]
     qb31 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk)) + qb03
     
-    x = np.linspace(separation_initial,booms_separation+separation_initial,50)
+    x = np.linspace(separation_initial,booms_separation+separation_initial,64)
     qb32 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk) + boom_area*(y_b3)) + qb31[-1]
     
-    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,50)
+    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,64)
     qb33 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk) + boom_area*(y_b4)) + qb32[-1]
     
-    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,50)
+    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,64)
     qb34 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk) + boom_area*(y_b5)) + qb33[-1]
     
-    x = np.linspace(3*booms_separation+separation_initial,l_sk,50)
+    x = np.linspace(3*booms_separation+separation_initial,l_sk,32)
     qb35 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk) + boom_area*(y_b6)) + qb34[-1]
     
     qb3 = np.hstack((qb31,qb32,qb33,qb34,qb35))
@@ -95,19 +95,19 @@ def VerticalShear(Sy):
     
     separation_initial = booms_separation/2
     
-    x = np.linspace(0,separation_initial,50)
+    x = np.linspace(0,separation_initial,32)
     qb41 = -(1/Izz_Aileron)*(integrate(function(x),x)*r*t_sk/l_sk) + qb04
     
-    x = np.linspace(separation_initial,booms_separation+separation_initial,50)
+    x = np.linspace(separation_initial,booms_separation+separation_initial,64)
     qb42 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk/l_sk) + boom_area*(y_b7)) + qb41[-1]
     
-    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,50)
+    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,64)
     qb43 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk/l_sk) + boom_area*(y_b8)) + qb42[-1]
     
-    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,50)
+    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,64)
     qb44 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk/l_sk) + boom_area*(y_b9)) + qb43[-1]
     
-    x = np.linspace(3*booms_separation+separation_initial,l_sk,50)
+    x = np.linspace(3*booms_separation+separation_initial,l_sk,48)
     qb45 = -(1/Izz_Aileron)*(((integrate(function(x),x))*r*t_sk/l_sk) + boom_area*(y_b10)) + qb44[-1]
     
     qb4 = np.hstack((qb41,qb42,qb43,qb44,qb45))
@@ -125,9 +125,9 @@ def VerticalShear(Sy):
         return -np.sin(x)
     qb06 = qb4[-1] + qb5[-1]
     
-    x = np.linspace(-pi/2,-theta_separation,50)
+    x = np.linspace(-pi/2,-theta_separation,15)
     qb61 = -(1/Izz_Aileron)*((integrate(function(x),x))*r**2*t_sk)  + qb06
-    x = np.linspace(-theta_separation,0,50)
+    x = np.linspace(-theta_separation,0,63)
     qb62 = -(1/Izz_Aileron)*((integrate(function(x),x))*r**2*t_sk + boom_area*(y_b11))  + qb61[-1]
     
     qb6 = np.hstack((qb61,qb62))
@@ -175,9 +175,9 @@ def HorizontalShear(Sz):
     def function(x):
         return (r*(1-np.cos(x))-centroid)
     
-    x1 = np.linspace(0,theta_separation,50)
+    x1 = np.linspace(0,theta_separation,63)
     qb11 = -(1/Iyy_Aileron)*((integrate(function(x1),x1))*r*t_sk + 0.5*boom_area*z_b1) + qbz01
-    x2 = np.linspace(theta_separation,pi/2,50)
+    x2 = np.linspace(theta_separation,pi/2,15)
     qb12 = -(1/Iyy_Aileron)*(((integrate(function(x2),x2))*r*t_sk) + boom_area*(z_b2)) + qb11[-1]
     
     qbz1 = np.hstack((qb11, qb12))
@@ -192,20 +192,20 @@ def HorizontalShear(Sz):
         return (-(centroid-r) + (Ca-r)*x/l_sk)
     
     separation_initial = 2*booms_separation-pi*r/2
-    x = np.linspace(0,separation_initial,50)
+    x = np.linspace(0,separation_initial,48)
     qbz03 = qbz1[-1] + qbz2[-1]
     qb31 = -(1/Iyy_Aileron)*((integrate(function(x),x))*t_sk) + qbz03
     
-    x = np.linspace(separation_initial,booms_separation+separation_initial,50)
+    x = np.linspace(separation_initial,booms_separation+separation_initial,64)
     qb32 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b3)) + qb31[-1]
     
-    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,50)
+    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,64)
     qb33 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b4)) + qb32[-1]
     
-    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,50)
+    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,64)
     qb34 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b5)) + qb33[-1]
     
-    x = np.linspace(3*booms_separation+separation_initial,l_sk,50)
+    x = np.linspace(3*booms_separation+separation_initial,l_sk,32)
     qb35 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b6)) + qb34[-1]
     
     qbz3 = np.hstack((qb31,qb32,qb33,qb34,qb35))
@@ -219,19 +219,19 @@ def HorizontalShear(Sz):
   
     separation_initial = booms_separation/2
     
-    x = np.linspace(0,separation_initial,50)
+    x = np.linspace(0,separation_initial,32)
     qb41 = -(1/Iyy_Aileron)*(integrate(function(x),x)*t_sk) + qb04
     
-    x = np.linspace(separation_initial,booms_separation+separation_initial,50)
+    x = np.linspace(separation_initial,booms_separation+separation_initial,64)
     qb42 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b7)) + qb41[-1]
     
-    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,50)
+    x = np.linspace(booms_separation+separation_initial,2*booms_separation+separation_initial,64)
     qb43 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b8)) + qb42[-1]
     
-    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,50)
+    x = np.linspace(2*booms_separation+separation_initial,3*booms_separation+separation_initial,64)
     qb44 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b9)) + qb43[-1]
     
-    x = np.linspace(3*booms_separation+separation_initial,l_sk,50)
+    x = np.linspace(3*booms_separation+separation_initial,l_sk,48)
     qb45 = -(1/Iyy_Aileron)*(((integrate(function(x),x))*t_sk) + boom_area*(z_b10)) + qb44[-1]
     
     qbz4 = np.hstack((qb41,qb42,qb43,qb44,qb45))
@@ -246,9 +246,9 @@ def HorizontalShear(Sz):
         return (r*(1-np.cos(x)) - centroid)
     qb06 = qbz4[-1] + qbz5[-1]
     
-    x = np.linspace(-pi/2,-theta_separation,50)
+    x = np.linspace(-pi/2,-theta_separation,15)
     qb61 = -(1/Iyy_Aileron)*((integrate(function(x),x))*r*t_sk)  + qb06
-    x = np.linspace(-theta_separation,0,50)
+    x = np.linspace(-theta_separation,0,63)
     qb62 = -(1/Iyy_Aileron)*((integrate(function(x),x))*r*t_sk + boom_area*(z_b11))  + qb61[-1]
     qb62[-1] += 0.5*boom_area*z_b1
     
@@ -290,12 +290,12 @@ def Torsion(T):
     
     #J = np.asscalar(T/x[2]) #Torsional stiffness calculation, used only for verification purposes
     
-    qb1 = np.ones(100)*x[0]
+    qb1 = np.ones(78)*x[0]
     qb2 = np.ones(50)*(x[1]-x[0])
-    qb3 = np.ones(250)*x[1]
-    qb4 = np.ones(250)*x[1]
+    qb3 = np.ones(272)*x[1]
+    qb4 = np.ones(272)*x[1]
     qb5 = np.ones(50)*(x[0]-x[1])
-    qb6 = np.ones(100)*x[0]
+    qb6 = np.ones(78)*x[0]
     
     
     return qb1,qb2,qb3,qb4,qb5,qb6
