@@ -1,5 +1,5 @@
 import numpy as np
-from variables import *
+#from variables import *
 import matplotlib.pyplot as plt
 
 "UNIT 2.1"

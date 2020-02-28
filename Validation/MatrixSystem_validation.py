@@ -1,25 +1,26 @@
 import numpy as np
 from numpy import sin, cos
-import scipy as sp
 from variables_validation import *
 from Aero_load_validation import integration
-import MoI_validation
+#import MoI_validation #Needed for Izz, Iyy, but instead taken directly from ver model
 import matplotlib.pyplot as plt
-from Torsional_Stiffness_validation import J
+from Torsional_Stiffness_validation import J #gives wrong value
 
 
-zh = 0.0837 #Not correct, 
+zh = 0.10856995078 
+J = 1.51014983907058e-5
 
 #aero-Load:
-
 x_coor = np.linspace(0, la, 100)
 CoPs = np.ones(len(x_coor))*0.25*Ca
 q_tilde = np.ones(np.shape(x_coor)) * 5.54e3
 qT_tilde = q_tilde*(zh - CoPs)
 ##------------------
 
-Izz = MoI_validation.Izz_Aileron
-Iyy = MoI_validation.Iyy_Aileron
+#Izz = MoI_validation.Izz_Aileron
+#Iyy = MoI_validation.Iyy_Aileron
+Izz = 1.0280189203385745e-5
+Iyy = 8.651211860639685e-5
 
 theta = theta_max
 hh = zh- h/2
@@ -311,7 +312,7 @@ def T(x):
         T[i] = Ry1*hh*powzero(Mac(x[i]-x1)) + Ry2*hh*powzero(Mac(x[i]-x2))+Ry3*hh*powzero(Mac(x[i]-x3))+RaI*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaI))+ P*(sin(theta)*zh-cos(theta)*h/2)*powzero(Mac(x[i]-xaII))+ integration(1,x[i],qT_tilde,x_coor)
     return T
 
-#xx = np.linspace(0,la, 100)
+xx = np.linspace(0,la, 100)
 #
 #plt.plot(xx,T(xx))
 

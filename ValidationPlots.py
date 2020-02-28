@@ -8,43 +8,103 @@ from scipy.spatial import distance
 node = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 9, skip_footer = 14594-6598)
 elem = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 6598, skip_footer = 14594-13233)
 
-####---------Parsing stresses---------#################
+####---------Parsing stresses & deflections---------#################
 
 
 f = open('B737.rpt')
 
-rawdata = [[],[],[],[],[],[] ]
+rawStress = [[],[],[],[],[],[] ] 
+rawDef = [[] for _ in range(3)]
 pos=0
+node_label_count = 0
 sizes = [5778, 856,5778, 856,5778, 856]
+sizes2 = 6588
 for line in f:
     if line.startswith('   Element Label'):
         next(f)
         next(f)
-        while len(rawdata[pos]) < sizes[pos]:
-            rawdata[pos].append(np.array(next(f).split()))
+        while len(rawStress[pos]) < sizes[pos]:
+            rawStress[pos].append(np.array(next(f).split()))
         pos +=1
+    if line.startswith('      Node Label'):
+        node_label_count +=1
+        if (node_label_count % 2 == 1) and (node_label_count // 2 <= 2):
+            next(f)
+            next(f)
+            while len(rawDef[node_label_count//2]) < sizes2:
+                rawDef[node_label_count//2].append(np.array(next(f).split()))
+                
         
-rawdata = np.array(rawdata)
+        
+rawStress = np.array(rawStress)
+rawDef = np.array(rawDef)
+
 
 ###################################################
-###----
+###----organising data into dictionaries-----
 
-data = []
+stressdata = []
 
 for j in range(6):
     elem_vm_dict = {}
     elem_s_dict = {}
-    for i in rawdata[j]:
-        elem_vm_dict[float(i[0])] = sum([float(i[2]),float(i[3])])/2
-        elem_s_dict[float(i[0])] = sum([float(i[4]),float(i[5])])/2
-    data.append(elem_vm_dict)
-    data.append(elem_s_dict)
+    for i in rawStress[j]:
+        elem_vm_dict[int(i[0])] = sum([float(i[2]),float(i[3])])/2
+        elem_s_dict[int(i[0])] = sum([float(i[4]),float(i[5])])/2
+    stressdata.append(elem_vm_dict)
+    stressdata.append(elem_s_dict)
     
+defdata = []
+
+for j in range(3):
+    node_def = {}
+    for i in rawDef[j]:
+        node_def[int(i[0])] = np.array([float(i[1]), float(i[2]), float(i[3]), float(i[4])])
+    defdata.append(node_def)
 
 
 #####################
-###-------------Splitting elements into sections, and finding the max stress at each section-------------
     
+nodes = {}
+elems = {}
+
+for i in range(len(node)):
+    nodes[node[i,0]] = node[i,1:]
+for i in range(len(elem)):
+    elems[elem[i,0]] = elem[i,1:]
+###-------------Splitting elements into sections, and finding the max stress at each section-------------
+
+def deflections(def_data):
+    hinge_nodes= []
+    
+    xpos = []
+    ydef = []
+    zdef = []
+    
+    for nod in nodes:
+        if nodes[nod][1] == 0 and nodes[nod][2] == 0:
+            hinge_nodes.append(nod)
+    
+    hinge_nodes = np.array(hinge_nodes)
+    
+    for nod in hinge_nodes:
+        xpos.append(nodes[nod][0])
+        ydef.append(def_data[nod][2])
+        zdef.append(def_data[nod][3])
+        
+    ydef = np.array(ydef)
+    zdef = np.array(zdef)
+    
+        
+    for nod in hinge_nodes:
+        print(nodes[nod])
+        print(def_data[nod][2:4])
+        print()
+        
+    print('max ydef: ', max(ydef), ' max zdef: ', max(zdef))
+    return xpos, ydef, zdef
+
+
     
 def maxSectionStress(sections, stress_data ):
     #sections = 100
@@ -52,16 +112,8 @@ def maxSectionStress(sections, stress_data ):
     elem_sections = [{} for _ in range(sections)]
     maxstr_sections = []
     
-    nodes = {}
-    elems = {}
     elem_dict = {}
-    elem_lst = []
-    
-    for i in range(len(node)):
-        nodes[node[i,0]] = node[i,1:]
-    for i in range(len(elem)):
-        elems[elem[i,0]] = elem[i,1:]
-    
+
     
     for i in elems:
         coords = []
@@ -74,13 +126,11 @@ def maxSectionStress(sections, stress_data ):
         z = sum(coords[:,2])/4
     
         elem_dict[i] = np.array([x,y,z])
-        elem_lst.append(np.array([x,y,z]))
     
         for j in range(len(sec_bounds)-1):
             if elem_dict[i][0] > sec_bounds[j] and elem_dict[i][0] < sec_bounds[j+1]:
                 elem_sections[j][i] = elem_dict[i]
         
-    elem_lst = np.array(elem_lst)
     
     for sec in elem_sections:
         stress = []
@@ -94,11 +144,20 @@ def maxSectionStress(sections, stress_data ):
     return sec_mid, maxstr_sections
 
 
+
+
 cases = ['von Mises, Bending (reg. 1)','Shear, Bending (reg. 1)', 'von Mises, Bending (reg. 2)','Shear, Bending (reg. 2)', 'Von Mises, Jam-Bent (reg. 1)','Shear, Jam-Bent (reg. 1)','Von Mises, Jam-Bent (reg. 2)','Shear, Jam-Bent (reg. 2)', 'Von Mises, Jam-Straight (reg. 1)','Shear, Jam-Straight (reg. 1)', 'Von Mises, Jam-Straight (reg. 2)','Shear, Jam-Straight (reg. 2)']                                                 
 
-for i in range(len(data)):
-    sec_mid, maxstr_sections = maxSectionStress(100, data[i])
-    plt.plot(sec_mid, maxstr_sections, label = cases[i])    
+#for i in range(len(stressdata)):
+#    sec_mid, maxstr_sections = maxSectionStress(100, stressdata[i])
+#    plt.plot(sec_mid, maxstr_sections, label = cases[i])    
+#plt.legend()
+#plt.show()
+
+for i in range(1):
+    xpos, ydef, zdef = deflections(defdata[i])
+    plt.scatter(xpos, ydef, label = 'y-deflection'+str(i+1))
+    plt.scatter(xpos, zdef, label = 'z-deflection'+str(i+1))
+    
 plt.legend()
 plt.show()
-    
