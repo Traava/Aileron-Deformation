@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 E = 300*10**9      #[Pa]
 P = 49.2*10**3     #[N]
 theta_max = 30*(np.pi/180) #[rad]
@@ -25,6 +26,3 @@ zhat = 0.0837      #[m] This is just a placeholder guess for now. Real shear cen
 
 G = 27.1e9
 E = 72.9e9
-J = 7.748548555816593e-06
-Izz = MoI.Izz_Aileron
-Iyy = MoI.Iyy_Aileron
