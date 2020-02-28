@@ -6,6 +6,10 @@ from scipy.spatial import distance
 node = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 9, skip_footer = 14594-6598)
 elem = np.genfromtxt('B737.inp', delimiter = ',', skip_header = 6598, skip_footer = 14594-13233)
 
+sections = 10
+sec_bounds = np.linspace(0, 2661, sections+1)
+elem_sections = [{} for _ in range(sections)]
+
 nodes = {}
 elems = {}
 elem_dict = {}
@@ -19,6 +23,7 @@ for i in range(len(elem)):
 elemxz = [] #remove values where y<0
 
 for i in elems:
+    
     
     coords = []
     nod = elems[i]
@@ -35,6 +40,11 @@ for i in elems:
     elem_lst.append(np.array([x,y,z]))
     if y>0:
         elemxz.append(np.array([x,z]))
+    for j in range(len(sec_bounds)-1):
+        if elem_dict[i][0] > sec_bounds[j] and elem_dict[i][0] < sec_bounds[j+1]:
+            elem_sections[j][i] = elem_dict[i]
+    
+    
 
 elemxz = np.array(elemxz)
 elem_lst = np.array(elem_lst)
@@ -65,48 +75,56 @@ for line in f:
 data = np.array(data)
 
 elem_vm_dict = {}
+elem_s_dict = {}
 elem_vm = []
+elem_s= []
 
 for i in data[0]:
     elem_vm_dict[float(i[0])] = sum([float(i[2]),float(i[3])])/2
     elem_vm.append(sum([float(i[2]),float(i[3])])/2)
+    elem_s_dict[float(i[0])] = sum([float(i[4]),float(i[5])])/2
+    elem_s.append(sum([float(i[4]),float(i[5])])/2)
+
+
+#####################
+
     
 
 
 ###------------Pygame----------------
     
-def color(val):# zero to 0.362
-    R = round(255 -val*255/0.362)
-    B = round(val*255/0.362)
-    return (R,0,B)
-
+#def color(val):
+#    R = round(255 -val*255/(0.362))
+#    B = round(val*255/(0.362))
+#    return (R,0,B)
+# zero to 0.362 for elem_vm_dict
+#0.07756 - -0.07326
 
     
-import pygame
-
-pygame.init()
-screen = pygame.display.set_mode((2661, 605))
-done = False
-
-#while not done:
-for i in elems:
-    verts = []
-    for j in elems[i]:
-        verts.append((nodes[j][0],nodes[j][2]+502.5))
-    
-    col = color(elem_vm_dict.get(int(i-1), 0))
-    #TODO: elem_vm has less elements than elems. Probably need to use elem_vm_dict so we know what elem we are using.
-    print(col)
-    pygame.draw.polygon(screen,col, verts)
-
-
-for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-                done = True
-                
-
-
-pygame.display.flip()
+#import pygame
+#
+#pygame.init()
+#screen = pygame.display.set_mode((2661, 605))
+#done = False
+#
+#
+#
+##while not done:
+#for i in elems:
+#    verts = []
+#    for j in elems[i]:
+#        verts.append((nodes[j][0],nodes[j][2]+502.5))
+#
+#    col = color(elem_vm_dict.get(int(i-1), 0))
+#
+#    pygame.draw.polygon(screen,col, verts)
+#
+#
+#for event in pygame.event.get():
+#        if event.type == pygame.QUIT:
+#                done = True
+##
+#pygame.display.flip()
 
 
 #########---------PLOTTING------------------
